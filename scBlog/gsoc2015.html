@@ -1,0 +1,56 @@
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+	<title></title>
+</head>
+<body>
+<p><font size="7"><a href="../publications.html#blogs">&larr; Louis Gagnon</a>&nbsp;:&nbsp;Blog - GSoC2015 wrap-up</font></p>
+
+<hr />
+<div align="center"><b>Google Summer of Code 2015 wrap-up: MBDyn</b><br />
+&nbsp;
+<p class="post-header"></p>
+
+<p style="line-height: 1.38; margin-bottom: 0pt; margin-top: 0pt; text-align: center;"><span style="font-size:14px;"><big><span style="font-family: times new roman, times, serif;"><small>This Google Summer of Code (GSoC) wrap up comes from Louis Gagnon and Pierangelo Masarati, from <a href="http://www.mbdyn.org">MBDyn</a>. It is a general purpose multibody dynamics software which allows modeling the physical response of a variety of mechanisms ranging from a helicopter to a human body.</small></span></big></span></p>
+
+<div dir="ltr" style="line-height: 1.38; margin-bottom: 0pt;
+          margin-top: 0pt; text-align: center;"><span style="font-size:14px;"><big><span style="font-family: times new roman, times, serif;"><small><img alt="Semispan Wing WRATS Tiltrotor Model (rendered by            ADAMS/View)" shrinktofit="true" src="tiltrotor.jpg" style="display: block; margin-left: auto; margin-right: auto; width: 403px; height: 247px;" /></small></span></big></span><span style="font-size:14px;"><big><span style="font-family: times new roman, times, serif;"><small>MBDyn<span style="background-color: transparent; color: black; font-style: normal; font-variant: normal; font-weight: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;"> </span>features the integrated multidisciplinary simulation of multibody, multiphysics systems, including nonlinear mechanics of rigid and flexible bodies (geometrically exact &amp; composite-ready beam and shell finite elements, component mode synthesis elements, lumped elements) subjected to kinematic constraints, along with smart materials, electric networks, active control, hydraulic networks, and essential fixed-wing and rotorcraft aerodynamics.</small></span></big></span></div>
+
+<p style="text-align: left;"><span style="font-size:14px;"><big><span style="font-family: times new roman, times, serif;"><small>Some example MBDyn projects can be found here: <a href="https://www.mbdyn.org/?Documentation___Official_Documentation___Examples">https://www.mbdyn.org/?Documentation___Official_Documentation___Examples</a></small></span></big></span></p>
+
+<p dir="ltr" style="line-height: 1.38; margin-bottom: 0pt; margin-top: 0pt;"><span style="font-size:14px;"><big><span style="font-family: times new roman, times, serif;"><small><span style="background-color: transparent; color: black; font-style: normal; font-variant: normal; font-weight: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">We participated in Google Summer of Code (GSoC) for the <b>first time</b> in 2015 and were lucky enough to have more than a dozen proposals. Google then allowed us to select students for <a href="https://groups.google.com/forum/#%21forum/mbdyngsoc2015">three projects</a> , which we had initially <a href="https://www.mbdyn.org/?Developers_corner___TODO_list">proposed</a> for the GSoC 2015.</span></small></span></big></span><br />
+&nbsp;</p>
+
+<ol>
+	<li><var>implementation collision detection and contact handling based on Bullet (<a href="http://bulletphysics.org/">http://bulletphysics.org/</a>);</var></li>
+	<li><var>enhancement and optimization of MBDyn internal libraries;</var></li>
+	<li><var>revamping of the Blender (<a href="http://www.blender.org/">http://www.blender.org/</a>) interface to MBDyn to better meet the scientific user&#39;s expectations;</var></li>
+</ol>
+
+<div dir="ltr" style="line-height: 1.38; margin-bottom: 0pt;
+          margin-top: 0pt;"><strong>Project 1: </strong>(collision detection), after mid-term evaluation, seems to be now on the right track.&nbsp; The skeleton of a module, implementing a user-defined element, is now available.&nbsp; It is being filled with the capability to deal with several basic shapes and place them according to the kinematics of MBDyn&#39;s nodes. Unfortunately, the student involved with this project had to retreat from the summer of code and the project thus remains incomplete.<span style="background-color: transparent; color: black;
+            font-size: 15px; font-style: normal; font-variant: normal;
+            font-weight: normal; text-decoration: none; vertical-align:
+            baseline; white-space: pre-wrap;"> </span><br />
+<strong>Project 2:</strong> (internal enhancements) has successfully led to the implementation of an expression evaluator for mathematical expressions. &nbsp;It is expected to improve the performance of &quot;string&quot; drive callers evaluation.&nbsp; The prototype passes all unit tests designed so far.&nbsp; The next steps will be: use it in string drive callers; optimize it (several aspects already outlined); benchmark it with respect to original code.<span style="background-color: transparent;
+            color: black; font-size: 15px; font-style: normal;
+            font-variant: normal; font-weight: normal; text-decoration:
+            none; vertical-align: baseline; white-space: pre-wrap;"> </span><br />
+<strong>Project 3:</strong> (Blender-based GUI) sadly didn&#39;t pass mid-term evaluation, so was pulled out of GSoC.&nbsp; However, thanks to the revitalized interest and the invaluable collaboration of several people, including Doug Baldwin (the original developer of the tool), Louis Gagnon and Andrea Zanoni, the existing tool has been significantly improved. A &quot;Blender and MBDyn&quot; working prototype is already available on Github: <span style="background-color: transparent; color:
+            black; font-size: 15px; font-style: normal; font-variant:
+            normal; font-weight: normal; text-decoration: none;
+            vertical-align: baseline; white-space: pre-wrap;"> <a class="moz-txt-link-freetext" href="https://github.com/gdbaldw/BlenderAndMBDyn/archive/master.zip">https://github.com/gdbaldw/BlenderAndMBDyn/archive/master.zip</a> </span></div>
+
+<br><br>
+
+<div dir="ltr" style="line-height: 1.38; margin-bottom: 0pt;
+          margin-top: 0pt;"><span style="font-size:24px;"><samp><span style="font-family: times new roman, times, serif;"><small>We want to thank everyone who contributed to this effort, starting from the selected students.</small></span></samp></span></div>
+
+<p></p>
+
+<div dir="ltr" style="line-height: 1.38; margin-bottom: 0pt;
+          margin-top: 0pt;"><span style="font-size:20px;"><span style="font-family: times new roman, times, serif;"><small>by Louis Gagnon and Pierangelo Masarati, Polytechnic University of Milan</small></span></span></div>
+</div>
+</body>
+
+<hr><a href="../legal.html">legal notice</a><hr>
+</html>

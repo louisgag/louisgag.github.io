@@ -1,0 +1,44 @@
+<html>
+<head>
+	<title>Blog of random and usually simple but not obvious things that may be helpful</title>
+</head>
+<body>
+<p><font size="7"><a href="../publications.html#blogs">&larr; Louis Gagnon</a>&nbsp;:&nbsp;Blog - SageMath to C++</font></p>
+
+<hr />
+
+<center><b>Exporting optimization constraints and gradients from SageMath to C++</b><br />
+Within the scope of my research, I sometimes want to generate a set of functions and their gradients to later use them in C++ code. In the case I have here, the purpose is to export one <a href="https://en.wiktionary.org/wiki/objective_function">objective function</a> and seven <a href="https://en.wikipedia.org/wiki/Constraint_%28mathematics%29">constraint</a> equations generated from a mathematical derivation performed with <a href="http://www.sagemath.org/">SageMath</a>. I wanted to use these equations, which are very lengthy, into a <a href="https://dakota.sandia.gov/">Dakota</a> optimization process. The following code will do just that. Copy and paste it in your SageMath worksheet. Enjoy!
+<br>
+</center>
+
+<pre><code>
+# print in c++ format for Dakota optimizer
+from sympy.utilities.codegen import codegen
+import numpy
+CGvarName = numpy.array(['eta','alpha_m_c','Reynolds_c','sigma_rod_c','sigma_b_c','sigma_s_c','tau_b_m_c','Omega_t_m_c']) # obj funct must be first
+CGvar = numpy.array([eta_c,alpha_m_c,Reynolds_c,sigma_rod_c,sigma_b_c,sigma_s_c,tau_b_m_c,Omega_t_m_c]) # names of equation objects in Sage
+allVars = CGvar[0].variables() # accessing all optim vars as being the ones of the objective function
+CG_tl = [] # initializing codegen tuple list: [(name, Eqn), (name, Eqn),...]
+for iVAR in (0..len(CGvar)-1):
+CG_tl.append((CGvarName[iVAR], CGvar[iVAR]._sympy_())); # appending codegen tuple list
+for iCG in (0..len(allVars)-1):
+    CGName = 'd'+CGvarName[iVAR]+'_%s' % allVars[iCG] # derivative variable name
+    CGDeriv = derivative(CGvar[iVAR],allVars[iCG]) # derivative itself
+    CG_tl.append((CGName,CGDeriv._sympy_())) # appending codegen tuple list
+    [(c_name, EqnsCpp), (h_name, EqnsH)] = codegen(CG_tl, "C", "test", 'project', to_files=False, header=False, empty=False, argument_sequence=None, global_vars=None)
+fCG=open('cppEquations.txt','w')
+fCG.write('//Codegen header, equations, and derivatives for objective and constraint functions = \n')
+fCG.write(EqnsH)
+fCG.write(EqnsCpp)
+fCG.close()
+</code></pre>
+<br><center>
+Comment and patches are welcome on the <a href="https://github.com/louisgag/sagemath-scripts/blob/master/sageCpp.sage">GitHub</a> file.<br>
+The code I posted here builds upon the <a href="https://ask.sagemath.org/question/7922/export-to-c-code/?answer=14574#post-id-14574">solution</a> presented by Benjamin Jones on ask.sagemath.org.<br>
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+</center>
+
+<hr><a href="../legal.html">legal notice</a><hr>
+</body>
+</html>

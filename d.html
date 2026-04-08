@@ -1,0 +1,2581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pratique Der Die Das</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+        
+        .correct { color: #38a169; font-weight: bold; }
+        .incorrect { color: #e53e3e; font-weight: bold; }
+        .review { color: #d69e2e; font-weight: bold; }
+        
+        .question-card {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #4299e1;
+            transition: all 0.3s ease;
+        }
+        
+        .question-card.review {
+            border-left: 5px solid #d69e2e;
+            background: #fffaf0;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .word {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #2d3748;
+        }
+        
+        .translation {
+            text-align: center;
+            font-style: italic;
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        
+        .review-indicator {
+            text-align: center;
+            color: #d69e2e;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .article-btn {
+            padding: 15px 25px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 80px;
+        }
+        
+        .der-btn {
+            background: #3182ce;
+            color: white;
+        }
+        
+        .die-btn {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .das-btn {
+            background: #38a169;
+            color: white;
+        }
+        
+        .article-btn:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        
+        .article-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .feedback.show {
+            opacity: 1;
+        }
+        
+        .feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #38a169;
+        }
+        
+        .feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #e53e3e;
+        }
+        
+        .next-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 12px 30px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .next-btn.show {
+            opacity: 1;
+        }
+        
+        .next-btn:hover {
+            background: #3182ce;
+            transform: translateY(-1px);
+        }
+        
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4299e1, #38a169);
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            padding: 15px;
+            background: #edf2f7;
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 id="title">🇩🇪 Pratique des articles allemands</h3>
+        
+        <div class="score">
+            Score: <span class="correct" id="correct">0</span> / <span class="incorrect" id="incorrect">0</span>
+            <div class="progress">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-value review" id="to-review">0</span>
+                <span>À réviser</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="mastered">0</span>
+                <span>Maîtrisés</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="questions-until-review">-</span>
+                <span>Avant révision</span>
+            </div>
+        </div>
+        
+        <div class="question-card" id="question-card">
+            <div class="review-indicator" id="review-indicator" style="display: none;">
+                🔄 Question de révision
+            </div>
+            <div class="word" id="word">Haus</div>
+            <div class="translation" id="translation">(maison)</div>
+            
+            <div class="buttons">
+                <button class="article-btn der-btn" onclick="checkAnswer('der')">der</button>
+                <button class="article-btn die-btn" onclick="checkAnswer('die')">die</button>
+                <button class="article-btn das-btn" onclick="checkAnswer('das')">das</button>
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Question suivante</button>
+        </div>
+    </div>
+
+    <script>
+const words = [
+    // Concepts abstraits neutres
+    {word: "Verständnis", translation: "compréhension", article: "das"},
+    {word: "Bewusstsein", translation: "conscience", article: "das"},
+    {word: "Verhältnis", translation: "rapport/relation", article: "das"},
+    {word: "Ergebnis", translation: "résultat", article: "das"},
+    {word: "Ereignis", translation: "événement", article: "das"},
+    {word: "Zeugnis", translation: "témoignage/bulletin", article: "das"},
+    {word: "Hindernis", translation: "obstacle", article: "das"},
+    {word: "Geheimnis", translation: "secret", article: "das"},
+    {word: "Gefühl", translation: "sentiment", article: "das"},
+    {word: "Wissen", translation: "savoir", article: "das"},
+    {word: "Interesse", translation: "intérêt", article: "das"},
+    {word: "Alter", translation: "âge/vieillesse", article: "das"},
+    {word: "Gedächtnis", translation: "mémoire", article: "das"},
+    {word: "Gleichgewicht", translation: "équilibre", article: "das"},
+    {word: "Vorurteil", translation: "préjugé", article: "das"},
+    {word: "Schicksal", translation: "destin", article: "das"},
+    {word: "Risiko", translation: "risque", article: "das"},
+    {word: "Prinzip", translation: "principe", article: "das"},
+    {word: "Phänomen", translation: "phénomène", article: "das"},
+    {word: "Dilemma", translation: "dilemme", article: "das"},
+
+    // Lieux et institutions
+    {word: "Krankenhaus", translation: "hôpital", article: "das"},
+    {word: "Rathaus", translation: "hôtel de ville", article: "das"},
+    {word: "Kaufhaus", translation: "grand magasin", article: "das"},
+    {word: "Gymnasium", translation: "lycée", article: "das"},
+    {word: "Museum", translation: "musée", article: "das"},
+    {word: "Theater", translation: "théâtre", article: "das"},
+    {word: "Zentrum", translation: "centre", article: "das"},
+    {word: "Institut", translation: "institut", article: "das"},
+    {word: "Labor", translation: "laboratoire", article: "das"},
+    {word: "Büro", translation: "bureau", article: "das"},
+    {word: "Studio", translation: "studio", article: "das"},
+    {word: "Archiv", translation: "archives", article: "das"},
+    {word: "Gericht", translation: "tribunal", article: "das"},
+    {word: "Parlament", translation: "parlement", article: "das"},
+    {word: "Ministerium", translation: "ministère", article: "das"},
+
+    // Concepts masculins
+    {word: "Fortschritt", translation: "progrès", article: "der"},
+    {word: "Unterschied", translation: "différence", article: "der"},
+    {word: "Einfluss", translation: "influence", article: "der"},
+    {word: "Erfolg", translation: "succès", article: "der"},
+    {word: "Versuch", translation: "tentative", article: "der"},
+    {word: "Vorschlag", translation: "proposition", article: "der"},
+    {word: "Beitrag", translation: "contribution", article: "der"},
+    {word: "Auftrag", translation: "mission/commande", article: "der"},
+    {word: "Inhalt", translation: "contenu", article: "der"},
+    {word: "Umfang", translation: "étendue", article: "der"},
+    {word: "Bereich", translation: "domaine", article: "der"},
+    {word: "Aspekt", translation: "aspect", article: "der"},
+    {word: "Faktor", translation: "facteur", article: "der"},
+    {word: "Prozess", translation: "processus", article: "der"},
+    {word: "Konflikt", translation: "conflit", article: "der"},
+    {word: "Kompromiss", translation: "compromis", article: "der"},
+    {word: "Konsens", translation: "consensus", article: "der"},
+    {word: "Kontrast", translation: "contraste", article: "der"},
+    {word: "Zusammenhang", translation: "contexte/lien", article: "der"},
+    {word: "Umstand", translation: "circonstance", article: "der"},
+
+    // Institutions et services féminins
+    {word: "Person", translation: "personne", article: "die"},
+    {word: "Bank", translation: "banque", article: "die"},
+    {word: "Post", translation: "poste", article: "die"},
+    {word: "Polizei", translation: "police", article: "die"},
+    {word: "Universität", translation: "université", article: "die"},
+    {word: "Fakultät", translation: "faculté", article: "die"},
+    {word: "Jugend", translation: "jeunesse", article: "die"},
+    {word: "Behörde", translation: "administration", article: "die"},
+    {word: "Verwaltung", translation: "administration", article: "die"},
+    {word: "Organisation", translation: "organisation", article: "die"},
+    {word: "Institution", translation: "institution", article: "die"},
+    {word: "Firma", translation: "entreprise", article: "die"},
+    {word: "Industrie", translation: "industrie", article: "die"},
+    {word: "Branche", translation: "secteur", article: "die"},
+    {word: "Konkurrenz", translation: "concurrence", article: "die"},
+
+    // Concepts avec suffixes -ät
+    {word: "Qualität", translation: "qualité", article: "die"},
+    {word: "Realität", translation: "réalité", article: "die"},
+    {word: "Nationalität", translation: "nationalité", article: "die"},
+    {word: "Mentalität", translation: "mentalité", article: "die"},
+    {word: "Spezialität", translation: "spécialité", article: "die"},
+    {word: "Aktivität", translation: "activité", article: "die"},
+    {word: "Kreativität", translation: "créativité", article: "die"},
+    {word: "Produktivität", translation: "productivité", article: "die"},
+    {word: "Flexibilität", translation: "flexibilité", article: "die"},
+    {word: "Stabilität", translation: "stabilité", article: "die"},
+
+    // Domaines et disciplines féminins
+    {word: "Technik", translation: "technique", article: "die"},
+    {word: "Politik", translation: "politique", article: "die"},
+    {word: "Musik", translation: "musique", article: "die"},
+    {word: "Physik", translation: "physique", article: "die"},
+    {word: "Mathematik", translation: "mathématiques", article: "die"},
+    {word: "Informatik", translation: "informatique", article: "die"},
+    {word: "Grammatik", translation: "grammaire", article: "die"},
+    {word: "Logik", translation: "logique", article: "die"},
+    {word: "Ethik", translation: "éthique", article: "die"},
+    {word: "Kritik", translation: "critique", article: "die"},
+    {word: "Statistik", translation: "statistique", article: "die"},
+    {word: "Systematik", translation: "systématique", article: "die"},
+    {word: "Theorie", translation: "théorie", article: "die"},
+    {word: "Praxis", translation: "pratique", article: "die"},
+    {word: "Analyse", translation: "analyse", article: "die"},
+    {word: "Synthese", translation: "synthèse", article: "die"},
+
+    // Concepts temporels et spatiaux
+    {word: "Gegenwart", translation: "présent", article: "die"},
+    {word: "Zukunft", translation: "avenir", article: "die"},
+    {word: "Epoche", translation: "époque", article: "die"},
+    {word: "Periode", translation: "période", article: "die"},
+    {word: "Phase", translation: "phase", article: "die"},
+    {word: "Etappe", translation: "étape", article: "die"},
+    {word: "Distanz", translation: "distance", article: "die"},
+    {word: "Nähe", translation: "proximité", article: "die"},
+    {word: "Ferne", translation: "distance/lointain", article: "die"},
+    {word: "Grenze", translation: "frontière", article: "die"},
+
+    // Actions et processus masculins
+    {word: "Verlauf", translation: "déroulement", article: "der"},
+    {word: "Ablauf", translation: "déroulement", article: "der"},
+    {word: "Aufbau", translation: "construction", article: "der"},
+    {word: "Abbau", translation: "démontage/réduction", article: "der"},
+    {word: "Ausbau", translation: "extension", article: "der"},
+    {word: "Umbau", translation: "transformation", article: "der"},
+    {word: "Einbau", translation: "installation", article: "der"},
+    {word: "Rückbau", translation: "démolition", article: "der"},
+    {word: "Aufgang", translation: "montée", article: "der"},
+    {word: "Untergang", translation: "déclin", article: "der"},
+
+    // Concepts économiques et sociaux
+    {word: "Markt", translation: "marché", article: "der"},
+    {word: "Handel", translation: "commerce", article: "der"},
+    {word: "Verkauf", translation: "vente", article: "der"},
+    {word: "Einkauf", translation: "achat", article: "der"},
+    {word: "Umsatz", translation: "chiffre d'affaires", article: "der"},
+    {word: "Gewinn", translation: "bénéfice", article: "der"},
+    {word: "Verlust", translation: "perte", article: "der"},
+    {word: "Kredit", translation: "crédit", article: "der"},
+    {word: "Vertrag", translation: "contrat", article: "der"},
+    {word: "Tarif", translation: "tarif", article: "der"},
+
+    // Concepts abstraits divers
+    {word: "Charakter", translation: "caractère", article: "der"},
+    {word: "Typ", translation: "type", article: "der"},
+    {word: "Stil", translation: "style", article: "der"},
+    {word: "Trend", translation: "tendance", article: "der"},
+    {word: "Standard", translation: "standard", article: "der"},
+    {word: "Rahmen", translation: "cadre", article: "der"},
+    {word: "Kontext", translation: "contexte", article: "der"},
+    {word: "Hintergrund", translation: "arrière-plan", article: "der"},
+    {word: "Vordergrund", translation: "premier plan", article: "der"},
+    {word: "Mittelpunkt", translation: "centre", article: "der"},
+
+    // Concepts neutres supplémentaires
+    {word: "Niveau", translation: "niveau", article: "das"},
+    {word: "Format", translation: "format", article: "das"},
+    {word: "System", translation: "système", article: "das"},
+    {word: "Element", translation: "élément", article: "das"},
+    {word: "Detail", translation: "détail", article: "das"},
+    {word: "Material", translation: "matériau", article: "das"},
+    {word: "Produkt", translation: "produit", article: "das"},
+    {word: "Projekt", translation: "projet", article: "das"},
+    {word: "Objekt", translation: "objet", article: "das"},
+    {word: "Subjekt", translation: "sujet", article: "das"},
+
+    // Concepts féminins supplémentaires
+    {word: "Methode", translation: "méthode", article: "die"},
+    {word: "Strategie", translation: "stratégie", article: "die"},
+    {word: "Taktik", translation: "tactique", article: "die"},
+    {word: "Technik", translation: "technique", article: "die"},
+    {word: "Routine", translation: "routine", article: "die"},
+    {word: "Tradition", translation: "tradition", article: "die"},
+    {word: "Innovation", translation: "innovation", article: "die"},
+    {word: "Revolution", translation: "révolution", article: "die"},
+    {word: "Evolution", translation: "évolution", article: "die"},
+    {word: "Reaktion", translation: "réaction", article: "die"},
+
+    // Concepts masculins supplémentaires
+    {word: "Mechanismus", translation: "mécanisme", article: "der"},
+    {word: "Organismus", translation: "organisme", article: "der"},
+    {word: "Algorithmus", translation: "algorithme", article: "der"},
+    {word: "Rhythmus", translation: "rythme", article: "der"},
+    {word: "Stimulus", translation: "stimulus", article: "der"},
+    {word: "Fokus", translation: "focus", article: "der"},
+    {word: "Status", translation: "statut", article: "der"},
+    {word: "Bonus", translation: "bonus", article: "der"},
+    {word: "Modus", translation: "mode", article: "der"},
+    {word: "Radius", translation: "rayon", article: "der"},
+
+    // Concepts neutres finaux
+    {word: "Tempo", translation: "tempo", article: "das"},
+    {word: "Echo", translation: "écho", article: "das"},
+    {word: "Ego", translation: "ego", article: "das"},
+    {word: "Logo", translation: "logo", article: "das"},
+    {word: "Video", translation: "vidéo", article: "das"},
+    {word: "Audio", translation: "audio", article: "das"},
+    {word: "Radio", translation: "radio", article: "das"},
+    {word: "Konto", translation: "compte", article: "das"},
+    {word: "Motto", translation: "devise", article: "das"},
+    {word: "Foto", translation: "photo", article: "das"},
+
+    // Concepts féminins finaux
+    {word: "Basis", translation: "base", article: "die"},
+    {word: "These", translation: "thèse", article: "die"},
+    {word: "Krise", translation: "crise", article: "die"},
+    {word: "Phase", translation: "phase", article: "die"},
+    {word: "Pause", translation: "pause", article: "die"},
+    {word: "Clause", translation: "clause", article: "die"},
+    {word: "Dose", translation: "dose", article: "die"},
+    {word: "Rose", translation: "rose", article: "die"},
+    {word: "Zone", translation: "zone", article: "die"},
+    {word: "Serie", translation: "série", article: "die"},
+
+    // Concepts philosophiques et abstraits
+    {word: "Ursprung", translation: "origine", article: "der"},
+    {word: "Zweck", translation: "but/objectif", article: "der"},
+    {word: "Sinn", translation: "sens/signification", article: "der"},
+    {word: "Geist", translation: "esprit", article: "der"},
+    {word: "Verstand", translation: "intelligence/raison", article: "der"},
+    {word: "Wille", translation: "volonté", article: "der"},
+    {word: "Trieb", translation: "pulsion/instinct", article: "der"},
+    {word: "Instinkt", translation: "instinct", article: "der"},
+    {word: "Reflex", translation: "réflexe", article: "der"},
+    {word: "Impuls", translation: "impulsion", article: "der"},
+    
+    // Concepts neutres avancés
+    {word: "Konzept", translation: "concept", article: "das"},
+    {word: "Schema", translation: "schéma", article: "das"},
+    {word: "Modell", translation: "modèle", article: "das"},
+    {word: "Muster", translation: "modèle/motif", article: "das"},
+    {word: "Symbol", translation: "symbole", article: "das"},
+    {word: "Signal", translation: "signal", article: "das"},
+    {word: "Zeichen", translation: "signe", article: "das"},
+    {word: "Merkmal", translation: "caractéristique", article: "das"},
+    {word: "Kriterium", translation: "critère", article: "das"},
+    {word: "Argument", translation: "argument", article: "das"},
+    
+    // Structures et systèmes
+    {word: "Netzwerk", translation: "réseau", article: "das"},
+    {word: "Gefüge", translation: "structure", article: "das"},
+    {word: "Gerüst", translation: "échafaudage/structure", article: "das"},
+    {word: "Fundament", translation: "fondement", article: "das"},
+    {word: "Framework", translation: "cadre de travail", article: "das"},
+    {word: "Interface", translation: "interface", article: "das"},
+    {word: "Protokoll", translation: "protocole", article: "das"},
+    {word: "Verfahren", translation: "procédure", article: "das"},
+    {word: "Programm", translation: "programme", article: "das"},
+    {word: "Curriculum", translation: "curriculum", article: "das"},
+    
+    // Concepts économiques avancés
+    {word: "Kapital", translation: "capital", article: "das"},
+    {word: "Investment", translation: "investissement", article: "das"},
+    {word: "Budget", translation: "budget", article: "das"},
+    {word: "Defizit", translation: "déficit", article: "das"},
+    {word: "Surplus", translation: "surplus", article: "der"},
+    {word: "Profit", translation: "profit", article: "der"},
+    {word: "Ertrag", translation: "rendement", article: "der"},
+    {word: "Aufwand", translation: "dépense/effort", article: "der"},
+    {word: "Kostenpunkt", translation: "point de coût", article: "der"},
+    {word: "Preis", translation: "prix", article: "der"},
+    
+    // Concepts temporels et mesures
+    {word: "Zeitraum", translation: "période", article: "der"},
+    {word: "Termin", translation: "rendez-vous/échéance", article: "der"},
+    {word: "Frist", translation: "délai", article: "die"},
+    {word: "Dauer", translation: "durée", article: "die"},
+    {word: "Länge", translation: "longueur", article: "die"},
+    {word: "Breite", translation: "largeur", article: "die"},
+    {word: "Höhe", translation: "hauteur", article: "die"},
+    {word: "Tiefe", translation: "profondeur", article: "die"},
+    {word: "Größe", translation: "taille", article: "die"},
+    {word: "Menge", translation: "quantité", article: "die"},
+    
+    // Concepts scientifiques
+    {word: "Molekül", translation: "molécule", article: "das"},
+    {word: "Atom", translation: "atome", article: "das"},
+    {word: "Teilchen", translation: "particule", article: "das"},
+    {word: "Elektron", translation: "électron", article: "das"},
+    {word: "Proton", translation: "proton", article: "das"},
+    {word: "Neutron", translation: "neutron", article: "das"},
+    {word: "Virus", translation: "virus", article: "das"},
+    {word: "Bakterium", translation: "bactérie", article: "das"},
+    {word: "Enzym", translation: "enzyme", article: "das"},
+    {word: "Protein", translation: "protéine", article: "das"},
+    
+    // Concepts médicaux
+    {word: "Symptom", translation: "symptôme", article: "das"},
+    {word: "Syndrom", translation: "syndrome", article: "das"},
+    {word: "Trauma", translation: "traumatisme", article: "das"},
+    {word: "Organ", translation: "organe", article: "das"},
+    {word: "Gewebe", translation: "tissu", article: "das"},
+    {word: "Blut", translation: "sang", article: "das"},
+    {word: "Plasma", translation: "plasma", article: "das"},
+    {word: "Serum", translation: "sérum", article: "das"},
+    {word: "Hormon", translation: "hormone", article: "das"},
+    {word: "Vitamin", translation: "vitamine", article: "das"},
+    
+    // Concepts psychologiques
+    {word: "Motiv", translation: "motif/motivation", article: "das"},
+    {word: "Verhalten", translation: "comportement", article: "das"},
+    {word: "Temperament", translation: "tempérament", article: "das"},
+    {word: "Charakter", translation: "caractère", article: "der"},
+    {word: "Intellekt", translation: "intellect", article: "der"},
+    {word: "Affekt", translation: "affect", article: "der"},
+    {word: "Stress", translation: "stress", article: "der"},
+    {word: "Druck", translation: "pression", article: "der"},
+    {word: "Zwang", translation: "contrainte", article: "der"},
+    {word: "Reiz", translation: "stimulus/attrait", article: "der"},
+    
+    // Phénomènes naturels
+    {word: "Klima", translation: "climat", article: "das"},
+    {word: "Wetter", translation: "temps/météo", article: "das"},
+    {word: "Phänomen", translation: "phénomène", article: "das"},
+    {word: "Element", translation: "élément", article: "das"},
+    {word: "Mineral", translation: "minéral", article: "das"},
+    {word: "Metall", translation: "métal", article: "das"},
+    {word: "Kristall", translation: "cristal", article: "der"},
+    {word: "Diamant", translation: "diamant", article: "der"},
+    {word: "Edelstein", translation: "pierre précieuse", article: "der"},
+    {word: "Rohstoff", translation: "matière première", article: "der"},
+    
+    // Concepts technologiques
+    {word: "Algorithmus", translation: "algorithme", article: "der"},
+    {word: "Code", translation: "code", article: "der"},
+    {word: "Server", translation: "serveur", article: "der"},
+    {word: "Client", translation: "client", article: "der"},
+    {word: "Browser", translation: "navigateur", article: "der"},
+    {word: "Cache", translation: "cache", article: "der"},
+    {word: "Speicher", translation: "mémoire", article: "der"},
+    {word: "Prozessor", translation: "processeur", article: "der"},
+    {word: "Chip", translation: "puce", article: "der"},
+    {word: "Sensor", translation: "capteur", article: "der"},
+    
+    // Arts et culture
+    {word: "Stil", translation: "style", article: "der"},
+    {word: "Trend", translation: "tendance", article: "der"},
+    {word: "Geschmack", translation: "goût", article: "der"},
+    {word: "Ästhetik", translation: "esthétique", article: "die"},
+    {word: "Kunst", translation: "art", article: "die"},
+    {word: "Kultur", translation: "culture", article: "die"},
+    {word: "Literatur", translation: "littérature", article: "die"},
+    {word: "Poesie", translation: "poésie", article: "die"},
+    {word: "Prosa", translation: "prose", article: "die"},
+    {word: "Lyrik", translation: "poésie lyrique", article: "die"},
+    
+    // Concepts juridiques
+    {word: "Gesetz", translation: "loi", article: "das"},
+    {word: "Recht", translation: "droit", article: "das"},
+    {word: "Gericht", translation: "tribunal", article: "das"},
+    {word: "Urteil", translation: "jugement", article: "das"},
+    {word: "Verfahren", translation: "procédure", article: "das"},
+    {word: "Beweis", translation: "preuve", article: "der"},
+    {word: "Richter", translation: "juge", article: "der"},
+    {word: "Zeuge", translation: "témoin", article: "der"},
+    {word: "Kläger", translation: "plaignant", article: "der"},
+    {word: "Beklagte", translation: "défendeur", article: "der"},
+    
+    // Émotions et états
+    {word: "Zustand", translation: "état", article: "der"},
+    {word: "Eindruck", translation: "impression", article: "der"},
+    {word: "Ausdruck", translation: "expression", article: "der"},
+    {word: "Anblick", translation: "vue/aspect", article: "der"},
+    {word: "Klang", translation: "son", article: "der"},
+    {word: "Ton", translation: "ton", article: "der"},
+    {word: "Laut", translation: "son/bruit", article: "der"},
+    {word: "Lärm", translation: "bruit", article: "der"},
+    {word: "Stille", translation: "silence", article: "die"},
+    {word: "Ruhe", translation: "calme", article: "die"},
+    
+    // Relations et interactions
+    {word: "Kontakt", translation: "contact", article: "der"},
+    {word: "Dialog", translation: "dialogue", article: "der"},
+    {word: "Monolog", translation: "monologue", article: "der"},
+    {word: "Diskurs", translation: "discours", article: "der"},
+    {word: "Austausch", translation: "échange", article: "der"},
+    {word: "Transfer", translation: "transfert", article: "der"},
+    {word: "Transport", translation: "transport", article: "der"},
+    {word: "Import", translation: "importation", article: "der"},
+    {word: "Export", translation: "exportation", article: "der"},
+    {word: "Input", translation: "entrée", article: "der"},
+    
+    // Concepts spatiaux
+    {word: "Raum", translation: "espace", article: "der"},
+    {word: "Platz", translation: "place", article: "der"},
+    {word: "Ort", translation: "lieu", article: "der"},
+    {word: "Standort", translation: "emplacement", article: "der"},
+    {word: "Bereich", translation: "zone/domaine", article: "der"},
+    {word: "Sektor", translation: "secteur", article: "der"},
+    {word: "Segment", translation: "segment", article: "das"},
+    {word: "Gebiet", translation: "territoire", article: "das"},
+    {word: "Terrain", translation: "terrain", article: "das"},
+    {word: "Areal", translation: "superficie", article: "das"},
+    
+    // Mouvements et actions
+    {word: "Bewegung", translation: "mouvement", article: "die"},
+    {word: "Aktion", translation: "action", article: "die"},
+    {word: "Reaktion", translation: "réaction", article: "die"},
+    {word: "Interaktion", translation: "interaction", article: "die"},
+    {word: "Transaktion", translation: "transaction", article: "die"},
+    {word: "Operation", translation: "opération", article: "die"},
+    {word: "Mission", translation: "mission", article: "die"},
+    {word: "Vision", translation: "vision", article: "die"},
+    {word: "Version", translation: "version", article: "die"},
+    {word: "Revision", translation: "révision", article: "die"},
+    
+    // Matériaux et substances
+    {word: "Substanz", translation: "substance", article: "die"},
+    {word: "Materie", translation: "matière", article: "die"},
+    {word: "Masse", translation: "masse", article: "die"},
+    {word: "Dichte", translation: "densité", article: "die"},
+    {word: "Konsistenz", translation: "consistance", article: "die"},
+    {word: "Textur", translation: "texture", article: "die"},
+    {word: "Struktur", translation: "structure", article: "die"},
+    {word: "Architektur", translation: "architecture", article: "die"},
+    {word: "Konstruktion", translation: "construction", article: "die"},
+    {word: "Produktion", translation: "production", article: "die"},
+    
+    // Concepts énergétiques
+    {word: "Energie", translation: "énergie", article: "die"},
+    {word: "Kraft", translation: "force", article: "die"},
+    {word: "Macht", translation: "pouvoir", article: "die"},
+    {word: "Stärke", translation: "force/intensité", article: "die"},
+    {word: "Schwäche", translation: "faiblesse", article: "die"},
+    {word: "Spannung", translation: "tension", article: "die"},
+    {word: "Entspannung", translation: "détente", article: "die"},
+    {word: "Anspannung", translation: "tension", article: "die"},
+    {word: "Belastung", translation: "charge", article: "die"},
+    {word: "Entlastung", translation: "décharge", article: "die"},
+    
+    // Processus et cycles
+    {word: "Zyklus", translation: "cycle", article: "der"},
+    {word: "Kreislauf", translation: "circuit", article: "der"},
+    {word: "Rhythmus", translation: "rythme", article: "der"},
+    {word: "Takt", translation: "cadence", article: "der"},
+    {word: "Beat", translation: "battement", article: "der"},
+    {word: "Puls", translation: "pouls", article: "der"},
+    {word: "Herzschlag", translation: "battement de cœur", article: "der"},
+    {word: "Atemzug", translation: "souffle", article: "der"},
+    {word: "Stoß", translation: "choc/poussée", article: "der"},
+    {word: "Schlag", translation: "coup", article: "der"},
+    
+    // Communication et médias
+    {word: "Medium", translation: "média", article: "das"},
+    {word: "Format", translation: "format", article: "das"},
+    {word: "Genre", translation: "genre", article: "das"},
+    {word: "Thema", translation: "thème", article: "das"},
+    {word: "Motiv", translation: "motif", article: "das"},
+    {word: "Motto", translation: "devise", article: "das"},
+    {word: "Slogan", translation: "slogan", article: "der"},
+    {word: "Begriff", translation: "terme/concept", article: "der"},
+    {word: "Terminus", translation: "terme technique", article: "der"},
+    {word: "Jargon", translation: "jargon", article: "der"},
+    
+    // Qualités et propriétés
+    {word: "Merkmal", translation: "caractéristique", article: "das"},
+    {word: "Attribut", translation: "attribut", article: "das"},
+    {word: "Feature", translation: "fonctionnalité", article: "das"},
+    {word: "Talent", translation: "talent", article: "das"},
+    {word: "Potenzial", translation: "potentiel", article: "das"},
+    {word: "Kapazität", translation: "capacité", article: "die"},
+    {word: "Kompetenz", translation: "compétence", article: "die"},
+    {word: "Effizienz", translation: "efficacité", article: "die"},
+    {word: "Präzision", translation: "précision", article: "die"},
+    {word: "Perfektion", translation: "perfection", argument: "die"},
+    
+    // Concepts abstraits avancés
+    {word: "Paradox", translation: "paradoxe", article: "das"},
+    {word: "Dilemma", translation: "dilemme", article: "das"},
+    {word: "Trauma", translation: "traumatisme", article: "das"},
+    {word: "Drama", translation: "drame", article: "das"},
+    {word: "Karma", translation: "karma", article: "das"},
+    {word: "Dogma", translation: "dogme", article: "das"},
+    {word: "Stigma", translation: "stigmate", article: "das"},
+    {word: "Schema", translation: "schéma", article: "das"},
+    {word: "Plasma", translation: "plasma", article: "das"},
+    {word: "Prisma", translation: "prisme", article: "das"},
+    
+    // Instruments et outils
+    {word: "Instrument", translation: "instrument", article: "das"},
+    {word: "Werkzeug", translation: "outil", article: "das"},
+    {word: "Gerät", translation: "appareil", article: "das"},
+    {word: "Apparat", translation: "appareil", article: "der"},
+    {word: "Mechanismus", translation: "mécanisme", article: "der"},
+    {word: "Motor", translation: "moteur", article: "der"},
+    {word: "Generator", translation: "générateur", article: "der"},
+    {word: "Operator", translation: "opérateur", article: "der"},
+    {word: "Navigator", translation: "navigateur", article: "der"},
+    {word: "Koordinator", translation: "coordinateur", article: "der"},
+    
+    // Modes et manières
+    {word: "Modus", translation: "mode", article: "der"},
+    {word: "Status", translation: "statut", article: "der"},
+    {word: "Bonus", translation: "bonus", article: "der"},
+    {word: "Malus", translation: "malus", article: "der"},
+    {word: "Fokus", translation: "focus", article: "der"},
+    {word: "Nexus", translation: "lien", article: "der"},
+    {word: "Locus", translation: "lieu", article: "der"},
+    {word: "Tonus", translation: "tonus", article: "der"},
+    {word: "Genus", translation: "genre", article: "das"},
+    {word: "Opus", translation: "œuvre", article: "das"},
+    
+    // Unités et mesures
+    {word: "Einheit", translation: "unité", article: "die"},
+    {word: "Skala", translation: "échelle", article: "die"},
+    {word: "Norm", translation: "norme", article: "die"},
+    {word: "Quote", translation: "quota", article: "die"},
+    {word: "Rate", translation: "taux", article: "die"},
+    {word: "Dosis", translation: "dose", article: "die"},
+    {word: "Portion", translation: "portion", article: "die"},
+    {word: "Fraktion", translation: "fraction", article: "die"},
+    {word: "Sektion", translation: "section", article: "die"},
+    {word: "Lektion", translation: "leçon", article: "die"},
+    
+    // Événements et situations
+    {word: "Situation", translation: "situation", article: "die"},
+    {word: "Kondition", translation: "condition", article: "die"},
+    {word: "Position", translation: "position", article: "die"},
+    {word: "Disposition", translation: "disposition", article: "die"},
+    {word: "Komposition", translation: "composition", article: "die"},
+    {word: "Opposition", translation: "opposition", article: "die"},
+    {word: "Expedition", translation: "expédition", article: "die"},
+    {word: "Edition", translation: "édition", article: "die"},
+    {word: "Tradition", translation: "tradition", article: "die"},
+    {word: "Innovation", translation: "innovation", article: "die"},
+    
+    // Concepts temporels avancés
+    {word: "Epoche", translation: "époque", article: "die"},
+    {word: "Ära", translation: "ère", article: "die"},
+    {word: "Periode", translation: "période", article: "die"},
+    {word: "Phase", translation: "phase", article: "die"},
+    {word: "Etappe", translation: "étape", article: "die"},
+    {word: "Sequenz", translation: "séquence", article: "die"},
+    {word: "Serie", translation: "série", article: "die"},
+    {word: "Kette", translation: "chaîne", article: "die"},
+    {word: "Reihe", translation: "rangée/série", article: "die"},
+    {word: "Folge", translation: "suite/conséquence", article: "die"},
+    
+    // Concepts spécialisés neutres
+    {word: "Spektrum", translation: "spectre", article: "das"},
+    {word: "Optimum", translation: "optimum", article: "das"},
+    {word: "Maximum", translation: "maximum", article: "das"},
+    {word: "Minimum", translation: "minimum", article: "das"},
+    {word: "Zentrum", translation: "centre", article: "das"},
+    {word: "Forum", translation: "forum", article: "das"},
+    {word: "Album", translation: "album", article: "das"},
+    {word: "Studium", translation: "études", article: "das"},
+    {word: "Praktikum", translation: "stage", article: "das"},
+    {word: "Seminar", translation: "séminaire", article: "das"},
+    
+    // Concepts masculins spécialisés
+    {word: "Faktor", translation: "facteur", article: "der"},
+    {word: "Sektor", translation: "secteur", article: "der"},
+    {word: "Vektor", translation: "vecteur", article: "der"},
+    {word: "Traktor", translation: "tracteur", article: "der"},
+    {word: "Reaktor", translation: "réacteur", article: "der"},
+    {word: "Direktor", translation: "directeur", article: "der"},
+    {word: "Inspektor", translation: "inspecteur", article: "der"},
+    {word: "Projektor", translation: "projecteur", article: "der"},
+    {word: "Reflektor", translation: "réflecteur", article: "der"},
+    {word: "Detektor", translation: "détecteur", article: "der"},
+    
+    // Concepts spécialisés féminins
+    {word: "Matrix", translation: "matrice", article: "die"},
+    {word: "Syntax", translation: "syntaxe", article: "die"},
+    {word: "Praxis", translation: "pratique", article: "die"},
+    {word: "Basis", translation: "base", article: "die"},
+    {word: "Oasis", translation: "oasis", article: "die"},
+    {word: "Genesis", translation: "genèse", article: "die"},
+    {word: "Thesis", translation: "thèse", article: "die"},
+    {word: "Mimesis", translation: "mimesis", article: "die"},
+    {word: "Kinesis", translation: "kinésie", article: "die"},
+    {word: "Ekstase", translation: "extase", article: "die"},
+    
+    // Derniers concepts variés
+    {word: "Hybrid", translation: "hybride", article: "der"},
+    {word: "Standard", translation: "standard", article: "der"},
+    {word: "Gradient", translation: "gradient", article: "der"},
+    {word: "Quotient", translation: "quotient", article: "der"},
+    {word: "Koeffizient", translation: "coefficient", article: "der"},
+    {word: "Exponent", translation: "exposant", article: "der"},
+    {word: "Opponent", translation: "opposant", article: "der"},
+    {word: "Referent", translation: "référent", article: "der"},
+    {word: "Präsident", translation: "président", article: "der"},
+    {word: "Dissident", translation: "dissident", article: "der"},
+    
+    // Concepts finaux neutres
+    {word: "Szenario", translation: "scénario", article: "das"},
+    {word: "Embargo", translation: "embargo", article: "das"},
+    {word: "Tornado", translation: "tornade", article: "der"},
+    {word: "Casino", translation: "casino", article: "das"},
+    {word: "Piano", translation: "piano", article: "das"},
+    {word: "Solo", translation: "solo", article: "das"},
+    {word: "Duo", translation: "duo", article: "das"},
+    {word: "Trio", translation: "trio", article: "das"},
+    {word: "Quatuor", translation: "quatuor", article: "das"},
+    {word: "Ensemble", translation: "ensemble", article: "das"},
+    
+    // Concepts finaux féminins
+    {word: "Agenda", translation: "agenda", article: "die"},
+    {word: "Arena", translation: "arène", article: "die"},
+    {word: "Antenne", translation: "antenne", article: "die"},
+    {word: "Routine", translation: "routine", article: "die"},
+    {word: "Machine", translation: "machine", article: "die"},
+    {word: "Turbine", translation: "turbine", article: "die"},
+    {word: "Engine", translation: "moteur", article: "die"},
+    {word: "Szene", translation: "scène", article: "die"},
+    {word: "Bühne", translation: "scène/estrade", article: "die"},
+    {word: "Linie", translation: "ligne", article: "die"},
+    
+    // Concepts finaux masculins
+    {word: "Magnet", translation: "aimant", article: "der"},
+    {word: "Planet", translation: "planète", article: "der"},
+    {word: "Komet", translation: "comète", article: "der"},
+    {word: "Satellit", translation: "satellite", article: "der"},
+    {word: "Pilot", translation: "pilote", article: "der"},
+    {word: "Robot", translation: "robot", article: "der"},
+    {word: "Gigant", translation: "géant", article: "der"},
+    {word: "Elefant", translation: "éléphant", article: "der"},
+    {word: "Diamant", translation: "diamant", article: "der"},
+    {word: "Konsonant", translation: "consonne", article: "der"},
+    
+ // Géographie et environnement
+    {word: "Kontinent", translation: "continent", article: "der"},
+    {word: "Archipel", translation: "archipel", article: "der"},
+    {word: "Ozean", translation: "océan", article: "der"},
+    {word: "Fjord", translation: "fjord", article: "der"},
+    {word: "Canyon", translation: "canyon", article: "der"},
+    {word: "Vulkan", translation: "volcan", article: "der"},
+    {word: "Gletscher", translation: "glacier", article: "der"},
+    {word: "Äquator", translation: "équateur", article: "der"},
+    {word: "Pol", translation: "pôle", article: "der"},
+    {word: "Meridian", translation: "méridien", article: "der"},
+    
+    // Phénomènes naturels et météo
+    {word: "Sturm", translation: "tempête", article: "der"},
+    {word: "Orkan", translation: "ouragan", article: "der"},
+    {word: "Blitz", translation: "éclair", article: "der"},
+    {word: "Donner", translation: "tonnerre", article: "der"},
+    {word: "Nebel", translation: "brouillard", article: "der"},
+    {word: "Tau", translation: "rosée", article: "der"},
+    {word: "Frost", translation: "gel", article: "der"},
+    {word: "Hagel", translation: "grêle", article: "der"},
+    {word: "Regenbogen", translation: "arc-en-ciel", article: "der"},
+    {word: "Sonnenstrahl", translation: "rayon de soleil", article: "der"},
+    
+    // Concepts neutres astronomiques
+    {word: "Universum", translation: "univers", article: "das"},
+    {word: "Galaxie", translation: "galaxie", article: "die"},
+    {word: "Sternbild", translation: "constellation", article: "das"},
+    {word: "Schwarzes Loch", translation: "trou noir", article: "das"},
+    {word: "Teleskop", translation: "télescope", article: "das"},
+    {word: "Mikroskop", translation: "microscope", article: "das"},
+    {word: "Prisma", translation: "prisme", article: "das"},
+    {word: "Radar", translation: "radar", article: "das"},
+    {word: "Sonar", translation: "sonar", article: "das"},
+    {word: "Laser", translation: "laser", article: "der"},
+    
+    // Matériaux et substances
+    {word: "Stahl", translation: "acier", article: "der"},
+    {word: "Kunststoff", translation: "plastique", article: "der"},
+    {word: "Kautschuk", translation: "caoutchouc", article: "der"},
+    {word: "Klebstoff", translation: "colle", article: "der"},
+    {word: "Farbstoff", translation: "colorant", article: "der"},
+    {word: "Brennstoff", translation: "combustible", article: "der"},
+    {word: "Explosivstoff", translation: "explosif", article: "der"},
+    {word: "Wirkstoff", translation: "principe actif", article: "der"},
+    {word: "Nährstoff", translation: "nutriment", article: "der"},
+    {word: "Ballast", translation: "lest", article: "der"},
+    
+    // Transport et véhicules
+    {word: "Fahrzeug", translation: "véhicule", article: "das"},
+    {word: "Flugzeug", translation: "avion", article: "das"},
+    {word: "Raumschiff", translation: "vaisseau spatial", article: "das"},
+    {word: "U-Boot", translation: "sous-marin", article: "das"},
+    {word: "Segelboot", translation: "voilier", article: "das"},
+    {word: "Motorrad", translation: "moto", article: "das"},
+    {word: "Fahrrad", translation: "vélo", article: "das"},
+    {word: "Skateboard", translation: "skateboard", article: "das"},
+    {word: "Snowboard", translation: "snowboard", article: "das"},
+    {word: "Surfbrett", translation: "planche de surf", article: "das"},
+    
+    // Architecture et construction
+    {word: "Fundament", translation: "fondation", article: "das"},
+    {word: "Skelett", translation: "squelette/structure", article: "das"},
+    {word: "Dach", translation: "toit", article: "das"},
+    {word: "Portal", translation: "portail", article: "das"},
+    {word: "Balkon", translation: "balcon", article: "der"},
+    {word: "Keller", translation: "cave", article: "der"},
+    {word: "Dachboden", translation: "grenier", article: "der"},
+    {word: "Kamin", translation: "cheminée", article: "der"},
+    {word: "Schornstein", translation: "cheminée (conduit)", article: "der"},
+    {word: "Ziegel", translation: "brique", article: "der"},
+    
+    // Formes et géométrie
+    {word: "Kreis", translation: "cercle", article: "der"},
+    {word: "Radius", translation: "rayon", article: "der"},
+    {word: "Durchmesser", translation: "diamètre", article: "der"},
+    {word: "Umfang", translation: "périmètre", article: "der"},
+    {word: "Winkel", translation: "angle", article: "der"},
+    {word: "Bogen", translation: "arc", article: "der"},
+    {word: "Kegel", translation: "cône", article: "der"},
+    {word: "Zylinder", translation: "cylindre", article: "der"},
+    {word: "Würfel", translation: "cube", article: "der"},
+    {word: "Pyramide", translation: "pyramide", article: "die"},
+    
+    // Couleurs et apparences
+    {word: "Schatten", translation: "ombre", article: "der"},
+    {word: "Glanz", translation: "éclat", article: "der"},
+    {word: "Schimmer", translation: "scintillement", article: "der"},
+    {word: "Reflex", translation: "reflet", article: "der"},
+    {word: "Kontrast", translation: "contraste", article: "der"},
+    {word: "Farbton", translation: "teinte", article: "der"},
+    {word: "Nuance", translation: "nuance", article: "die"},
+    {word: "Pigment", translation: "pigment", article: "das"},
+    {word: "Spektrum", translation: "spectre", article: "das"},
+    {word: "Prisma", translation: "prisme", article: "das"},
+    
+    // Sons et acoustique
+    {word: "Echo", translation: "écho", article: "das"},
+    {word: "Resonanz", translation: "résonance", article: "die"},
+    {word: "Frequenz", translation: "fréquence", article: "die"},
+    {word: "Amplitude", translation: "amplitude", article: "die"},
+    {word: "Dezibel", translation: "décibel", article: "das"},
+    {word: "Mikrofon", translation: "microphone", article: "das"},
+    {word: "Lautsprecher", translation: "haut-parleur", article: "der"},
+    {word: "Verstärker", translation: "amplificateur", article: "der"},
+    {word: "Filter", translation: "filtre", article: "der"},
+    {word: "Equalizer", translation: "égaliseur", article: "der"},
+    
+    // Cuisine et alimentation avancée
+    {word: "Gewürz", translation: "épice", article: "das"},
+    {word: "Aroma", translation: "arôme", article: "das"},
+    {word: "Bouquet", translation: "bouquet (vin)", article: "das"},
+    {word: "Geschmack", translation: "goût", article: "der"},
+    {word: "Beigeschmack", translation: "arrière-goût", article: "der"},
+    {word: "Appetit", translation: "appétit", article: "der"},
+    {word: "Hunger", translation: "faim", article: "der"},
+    {word: "Durst", translation: "soif", article: "der"},
+    {word: "Sättigung", translation: "satiété", article: "die"},
+    {word: "Verdauung", translation: "digestion", article: "die"},
+    
+    // Textiles et matières
+    {word: "Stoff", translation: "tissu", article: "der"},
+    {word: "Faden", translation: "fil", article: "der"},
+    {word: "Draht", translation: "fil métallique", article: "der"},
+    {word: "Seil", translation: "corde", article: "das"},
+    {word: "Kabel", translation: "câble", article: "das"},
+    {word: "Leder", translation: "cuir", article: "das"},
+    {word: "Fell", translation: "fourrure", article: "das"},
+    {word: "Pelz", translation: "pelage", article: "der"},
+    {word: "Wolle", translation: "laine", article: "die"},
+    {word: "Seide", translation: "soie", article: "die"},
+    
+    // Sports et activités
+    {word: "Wettkampf", translation: "compétition", article: "der"},
+    {word: "Rekord", translation: "record", article: "der"},
+    {word: "Sieg", translation: "victoire", article: "der"},
+    {word: "Niederlage", translation: "défaite", article: "die"},
+    {word: "Mannschaft", translation: "équipe", article: "die"},
+    {word: "Gegner", translation: "adversaire", article: "der"},
+    {word: "Schiedsrichter", translation: "arbitre", article: "der"},
+    {word: "Zuschauer", translation: "spectateur", article: "der"},
+    {word: "Fan", translation: "fan", article: "der"},
+    {word: "Stadion", translation: "stade", article: "das"},
+    
+    // Instruments et outils spécialisés
+    {word: "Hebel", translation: "levier", article: "der"},
+    {word: "Schraubenzieher", translation: "tournevis", article: "der"},
+    {word: "Hammer", translation: "marteau", article: "der"},
+    {word: "Säge", translation: "scie", article: "die"},
+    {word: "Bohrer", translation: "perceuse", article: "der"},
+    {word: "Pinsel", translation: "pinceau", article: "der"},
+    {word: "Palette", translation: "palette", article: "die"},
+    {word: "Staffelei", translation: "chevalet", article: "die"},
+    {word: "Leinwand", translation: "toile", article: "die"},
+    {word: "Rahmen", translation: "cadre", article: "der"},
+    
+    // Concepts mathématiques
+    {word: "Gleichung", translation: "équation", article: "die"},
+    {word: "Formel", translation: "formule", article: "die"},
+    {word: "Variable", translation: "variable", article: "die"},
+    {word: "Konstante", translation: "constante", article: "die"},
+    {word: "Funktion", translation: "fonction", article: "die"},
+    {word: "Integral", translation: "intégrale", article: "das"},
+    {word: "Differential", translation: "différentielle", article: "das"},
+    {word: "Logarithmus", translation: "logarithme", article: "der"},
+    {word: "Sinus", translation: "sinus", article: "der"},
+    {word: "Kosinus", translation: "cosinus", article: "der"},
+    
+    // Concepts chimiques
+    {word: "Reaktion", translation: "réaction", article: "die"},
+    {word: "Synthese", translation: "synthèse", article: "die"},
+    {word: "Katalysator", translation: "catalyseur", article: "der"},
+    {word: "Lösungsmittel", translation: "solvant", article: "das"},
+    {word: "Säure", translation: "acide", article: "die"},
+    {word: "Base", translation: "base", article: "die"},
+    {word: "Salz", translation: "sel", article: "das"},
+    {word: "Kristall", translation: "cristal", article: "der"},
+    {word: "Polymer", translation: "polymère", article: "das"},
+    {word: "Monomer", translation: "monomère", article: "das"},
+    
+    // Concepts biologiques
+    {word: "Organismus", translation: "organisme", article: "der"},
+    {word: "Zelle", translation: "cellule", article: "die"},
+    {word: "Kern", translation: "noyau", article: "der"},
+    {word: "Membran", translation: "membrane", article: "die"},
+    {word: "Chromosom", translation: "chromosome", article: "das"},
+    {word: "Gen", translation: "gène", article: "das"},
+    {word: "DNA", translation: "ADN", article: "die"},
+    {word: "RNA", translation: "ARN", article: "die"},
+    {word: "Mutation", translation: "mutation", article: "die"},
+    {word: "Evolution", translation: "évolution", article: "die"},
+    
+    // Concepts informatiques avancés
+    {word: "Datenbank", translation: "base de données", article: "die"},
+    {word: "Software", translation: "logiciel", article: "die"},
+    {word: "Hardware", translation: "matériel", article: "die"},
+    {word: "Firmware", translation: "micrologiciel", article: "die"},
+    {word: "Malware", translation: "logiciel malveillant", article: "die"},
+    {word: "Backup", translation: "sauvegarde", article: "das"},
+    {word: "Update", translation: "mise à jour", article: "das"},
+    {word: "Download", translation: "téléchargement", article: "der"},
+    {word: "Upload", translation: "téléversement", article: "der"},
+    {word: "Stream", translation: "flux", article: "der"},
+    
+    // Objets du quotidien sophistiqués
+    {word: "Adapter", translation: "adaptateur", article: "der"},
+    {word: "Converter", translation: "convertisseur", article: "der"},
+    {word: "Transformer", translation: "transformateur", article: "der"},
+    {word: "Modulator", translation: "modulateur", article: "der"},
+    {word: "Demodulator", translation: "démodulateur", article: "der"},
+    {word: "Oscillator", translation: "oscillateur", article: "der"},
+    {word: "Regulator", translation: "régulateur", article: "der"},
+    {word: "Simulator", translation: "simulateur", article: "der"},
+    {word: "Emulator", translation: "émulateur", article: "der"},
+    {word: "Calculator", translation: "calculatrice", article: "der"},
+    
+    // Concepts artistiques et créatifs
+    {word: "Skulptur", translation: "sculpture", article: "die"},
+    {word: "Malerei", translation: "peinture", article: "die"},
+    {word: "Grafik", translation: "graphisme", article: "die"},
+    {word: "Collage", translation: "collage", article: "die"},
+    {word: "Montage", translation: "montage", article: "die"},
+    {word: "Installation", translation: "installation", article: "die"},
+    {word: "Performance", translation: "performance", article: "die"},
+    {word: "Improvisation", translation: "improvisation", article: "die"},
+    {word: "Komposition", translation: "composition", article: "die"},
+    {word: "Interpretation", translation: "interprétation", article: "die"},
+    
+    // Concepts musicaux
+    {word: "Akkord", translation: "accord", article: "der"},
+    {word: "Rhythmus", translation: "rythme", article: "der"},
+    {word: "Melodie", translation: "mélodie", article: "die"},
+    {word: "Harmonie", translation: "harmonie", article: "die"},
+    {word: "Symphonie", translation: "symphonie", article: "die"},
+    {word: "Konzert", translation: "concert", article: "das"},
+    {word: "Orchester", translation: "orchestre", article: "das"},
+    {word: "Ensemble", translation: "ensemble", article: "das"},
+    {word: "Quartet", translation: "quatuor", article: "das"},
+    {word: "Duett", translation: "duo", article: "das"},
+    
+    // Concepts littéraires
+    {word: "Roman", translation: "roman", article: "der"},
+    {word: "Vers", translation: "vers", article: "der"},
+    {word: "Reim", translation: "rime", article: "der"},
+    {word: "Metapher", translation: "métaphore", article: "die"},
+    {word: "Allegorie", translation: "allégorie", article: "die"},
+    {word: "Symbolik", translation: "symbolisme", article: "die"},
+    {word: "Rhetorik", translation: "rhétorique", article: "die"},
+    {word: "Dramaturgie", translation: "dramaturgie", article: "die"},
+    {word: "Protagonist", translation: "protagoniste", article: "der"},
+    {word: "Antagonist", translation: "antagoniste", article: "der"},
+    
+    // Phénomènes physiques
+    {word: "Gravitation", translation: "gravitation", article: "die"},
+    {word: "Magnetismus", translation: "magnétisme", article: "der"},
+    {word: "Elektrizität", translation: "électricité", article: "die"},
+    {word: "Radioaktivität", translation: "radioactivité", article: "die"},
+    {word: "Thermodynamik", translation: "thermodynamique", article: "die"},
+    {word: "Mechanik", translation: "mécanique", article: "die"},
+    {word: "Optik", translation: "optique", article: "die"},
+    {word: "Akustik", translation: "acoustique", article: "die"},
+    {word: "Dynamik", translation: "dynamique", article: "die"},
+    {word: "Statik", translation: "statique", article: "die"},
+    
+    // Concepts économiques spécialisés
+    {word: "Monopol", translation: "monopole", article: "das"},
+    {word: "Oligopol", translation: "oligopole", article: "das"},
+    {word: "Kartell", translation: "cartel", article: "das"},
+    {word: "Trust", translation: "trust", article: "der"},
+    {word: "Konzern", translation: "groupe", article: "der"},
+    {word: "Holding", translation: "holding", article: "die"},
+    {word: "Aktie", translation: "action", article: "die"},
+    {word: "Obligation", translation: "obligation", article: "die"},
+    {word: "Option", translation: "option", article: "die"},
+    {word: "Future", translation: "contrat à terme", article: "das"},
+    
+    // Concepts sociologiques
+    {word: "Schicht", translation: "couche sociale", article: "die"},
+    {word: "Klasse", translation: "classe", article: "die"},
+    {word: "Elite", translation: "élite", article: "die"},
+    {word: "Masse", translation: "masse", article: "die"},
+    {word: "Gruppe", translation: "groupe", article: "die"},
+    {word: "Gemeinschaft", translation: "communauté", article: "die"},
+    {word: "Gesellschaft", translation: "société", article: "die"},
+    {word: "Kultur", translation: "culture", article: "die"},
+    {word: "Subkultur", translation: "sous-culture", article: "die"},
+    {word: "Mainstream", translation: "courant dominant", article: "der"},
+    
+    // Concepts psychologiques avancés
+    {word: "Psyche", translation: "psyché", article: "die"},
+    {word: "Persönlichkeit", translation: "personnalité", article: "die"},
+    {word: "Identität", translation: "identité", article: "die"},
+    {word: "Ego", translation: "ego", article: "das"},
+    {word: "Superego", translation: "surmoi", article: "das"},
+    {word: "Libido", translation: "libido", article: "die"},
+    {word: "Komplex", translation: "complexe", article: "der"},
+    {word: "Syndrom", translation: "syndrome", article: "das"},
+    {word: "Phobie", translation: "phobie", article: "die"},
+    {word: "Manie", translation: "manie", article: "die"},
+    
+    // Concepts philosophiques avancés
+    {word: "Existenz", translation: "existence", article: "die"},
+    {word: "Essenz", translation: "essence", article: "die"},
+    {word: "Substanz", translation: "substance", article: "die"},
+    {word: "Akzidenz", translation: "accident", article: "die"},
+    {word: "Kausalität", translation: "causalité", article: "die"},
+    {word: "Determinismus", translation: "déterminisme", article: "der"},
+    {word: "Relativismus", translation: "relativisme", article: "der"},
+    {word: "Absolutismus", translation: "absolutisme", article: "der"},
+    {word: "Nihilismus", translation: "nihilisme", article: "der"},
+    {word: "Existentialismus", translation: "existentialisme", article: "der"},
+    
+    // Objets techniques spécialisés
+    {word: "Transistor", translation: "transistor", article: "der"},
+    {word: "Kondensator", translation: "condensateur", article: "der"},
+    {word: "Widerstand", translation: "résistance", article: "der"},
+    {word: "Induktor", translation: "inducteur", article: "der"},
+    {word: "Diode", translation: "diode", article: "die"},
+    {word: "Kathode", translation: "cathode", article: "die"},
+    {word: "Anode", translation: "anode", article: "die"},
+    {word: "Elektrode", translation: "électrode", article: "die"},
+    {word: "Leiter", translation: "conducteur", article: "der"},
+    {word: "Isolator", translation: "isolant", article: "der"},
+    
+    // Concepts géologiques
+    {word: "Sediment", translation: "sédiment", article: "das"},
+    {word: "Erosion", translation: "érosion", article: "die"},
+    {word: "Tektonik", translation: "tectonique", article: "die"},
+    {word: "Magma", translation: "magma", article: "das"},
+    {word: "Lava", translation: "lave", article: "die"},
+    {word: "Granit", translation: "granit", article: "der"},
+    {word: "Marmor", translation: "marbre", article: "der"},
+    {word: "Kalk", translation: "calcaire", article: "der"},
+    {word: "Schiefer", translation: "schiste", article: "der"},
+    {word: "Sandstein", translation: "grès", article: "der"},
+    
+    // Concepts botaniques
+    {word: "Photosynthese", translation: "photosynthèse", article: "die"},
+    {word: "Chlorophyll", translation: "chlorophylle", article: "das"},
+    {word: "Pollen", translation: "pollen", article: "der"},
+    {word: "Nektar", translation: "nectar", article: "der"},
+    {word: "Frucht", translation: "fruit", article: "die"},
+    {word: "Samen", translation: "graine", article: "der"},
+    {word: "Wurzel", translation: "racine", article: "die"},
+    {word: "Stamm", translation: "tronc", article: "der"},
+    {word: "Ast", translation: "branche", article: "der"},
+    {word: "Blatt", translation: "feuille", article: "das"},
+    
+    // Concepts zoologiques
+    {word: "Säugetier", translation: "mammifère", article: "das"},
+    {word: "Reptil", translation: "reptile", article: "das"},
+    {word: "Amphibium", translation: "amphibien", article: "das"},
+    {word: "Wirbeltier", translation: "vertébré", article: "das"},
+    {word: "Wirbelloser", translation: "invertébré", article: "der"},
+    {word: "Parasit", translation: "parasite", article: "der"},
+    {word: "Symbiose", translation: "symbiose", article: "die"},
+    {word: "Metamorphose", translation: "métamorphose", article: "die"},
+    {word: "Migration", translation: "migration", article: "die"},
+    {word: "Hibernation", translation: "hibernation", article: "die"},
+    
+    // Derniers concepts variés neutres
+    {word: "Vakuum", translation: "vide", article: "das"},
+    {word: "Plasma", translation: "plasma", article: "das"},
+    {word: "Hologramm", translation: "hologramme", article: "das"},
+    {word: "Stereogramm", translation: "stéréogramme", article: "das"},
+    {word: "Diagramm", translation: "diagramme", article: "das"},
+    {word: "Programm", translation: "programme", article: "das"},
+    {word: "Telegramm", translation: "télégramme", article: "das"},
+    {word: "Anagramm", translation: "anagramme", article: "das"},
+    {word: "Monogramm", translation: "monogramme", article: "das"},
+    {word: "Pictogramm", translation: "pictogramme", article: "das"},
+    
+    // Derniers concepts masculins
+    {word: "Parameter", translation: "paramètre", article: "der"},
+    {word: "Perimeter", translation: "périmètre", article: "der"},
+    {word: "Barometer", translation: "baromètre", article: "das"},
+    {word: "Thermometer", translation: "thermomètre", article: "das"},
+    {word: "Hygrometer", translation: "hygromètre", article: "das"},
+    {word: "Speedometer", translation: "compteur de vitesse", article: "der"},
+    {word: "Voltmeter", translation: "voltmètre", article: "das"},
+    {word: "Amperemeter", translation: "ampèremètre", article: "das"},
+    {word: "Ohmmeter", translation: "ohmmètre", article: "das"},
+    {word: "Multimeter", translation: "multimètre", article: "das"},
+    
+    // Derniers concepts féminins
+    {word: "Peripherie", translation: "périphérie", article: "die"},
+    {word: "Galaxie", translation: "galaxie", article: "die"},
+    {word: "Strategie", translation: "stratégie", article: "die"},
+    {word: "Taktik", translation: "tactique", article: "die"},
+    {word: "Logistik", translation: "logistique", article: "die"},
+    {word: "Heuristik", translation: "heuristique", article: "die"},
+    {word: "Systematik", translation: "systématique", article: "die"},
+    {word: "Pragmatik", translation: "pragmatique", article: "die"},
+    {word: "Semantik", translation: "sémantique", article: "die"},
+    {word: "Syntax", translation: "syntaxe", article: "die"},
+    
+// Concepts maritimes et nautiques
+    {word: "Anker", translation: "ancre", article: "der"},
+    {word: "Ruder", translation: "gouvernail", article: "das"},
+    {word: "Segel", translation: "voile", article: "das"},
+    {word: "Mast", translation: "mât", article: "der"},
+    {word: "Bug", translation: "proue", article: "der"},
+    {word: "Heck", translation: "poupe", article: "das"},
+    {word: "Kiel", translation: "quille", article: "der"},
+    {word: "Rumpf", translation: "coque", article: "der"},
+    {word: "Deck", translation: "pont", article: "das"},
+    {word: "Luke", translation: "écoutille", article: "die"},
+    
+    // Gastronomie et cuisine avancée
+    {word: "Delikatesse", translation: "délicatesse", article: "die"},
+    {word: "Gourmet", translation: "gourmet", article: "der"},
+    {word: "Rezept", translation: "recette", article: "das"},
+    {word: "Zutat", translation: "ingrédient", article: "die"},
+    {word: "Marinade", translation: "marinade", article: "die"},
+    {word: "Vinaigrette", translation: "vinaigrette", article: "die"},
+    {word: "Emulsion", translation: "émulsion", article: "die"},
+    {word: "Reduktion", translation: "réduction", article: "die"},
+    {word: "Glasur", translation: "glaçage", article: "die"},
+    {word: "Garnierung", translation: "garniture", article: "die"},
+    
+    // Mode et textiles avancés
+    {word: "Couture", translation: "couture", article: "die"},
+    {word: "Schnitt", translation: "coupe", article: "der"},
+    {word: "Schnittmuster", translation: "patron", article: "das"},
+    {word: "Naht", translation: "couture", article: "die"},
+    {word: "Saum", translation: "ourlet", article: "der"},
+    {word: "Aufschlag", translation: "revers", article: "der"},
+    {word: "Kragen", translation: "col", article: "der"},
+    {word: "Ärmel", translation: "manche", article: "der"},
+    {word: "Knopf", translation: "bouton", article: "der"},
+    {word: "Reißverschluss", translation: "fermeture éclair", article: "der"},
+    
+    // Horlogerie et mécanique de précision
+    {word: "Uhrwerk", translation: "mécanisme d'horloge", article: "das"},
+    {word: "Feder", translation: "ressort", article: "die"},
+    {word: "Zahnrad", translation: "engrenage", article: "das"},
+    {word: "Hebel", translation: "levier", article: "der"},
+    {word: "Achse", translation: "axe", article: "die"},
+    {word: "Lager", translation: "roulement", article: "das"},
+    {word: "Schraube", translation: "vis", article: "die"},
+    {word: "Mutter", translation: "écrou", article: "die"},
+    {word: "Bolzen", translation: "boulon", article: "der"},
+    {word: "Niet", translation: "rivet", article: "der"},
+    
+    // Photographie et optique
+    {word: "Objektiv", translation: "objectif", article: "das"},
+    {word: "Blende", translation: "diaphragme (photo)", article: "die"},
+    {word: "Verschluss", translation: "obturateur", article: "der"},
+    {word: "Belichtung", translation: "exposition", article: "die"},
+    {word: "Schärfe", translation: "netteté", article: "die"},
+    {word: "Weitwinkel", translation: "grand angle", article: "der"},
+    
+    // Théâtre et spectacle
+    {word: "Vorhang", translation: "rideau", article: "der"},
+    {word: "Kulisse", translation: "décor", article: "die"},
+    {word: "Requisit", translation: "accessoire", article: "das"},
+    {word: "Kostüm", translation: "costume", article: "das"},
+    {word: "Maske", translation: "masque", article: "die"},
+    {word: "Schminke", translation: "maquillage", article: "die"},
+    {word: "Rampenlicht", translation: "feux de la rampe", article: "das"},
+    {word: "Spotlight", translation: "projecteur", article: "der"},
+    {word: "Applaus", translation: "applaudissements", article: "der"},
+    {word: "Ovation", translation: "ovation", article: "die"},
+    
+    // Agriculture et jardinage
+    {word: "Ackerbau", translation: "agriculture", article: "der"},
+    {word: "Dünger", translation: "engrais", article: "der"},
+    {word: "Kompost", translation: "compost", article: "der"},
+    {word: "Mulch", translation: "paillis", article: "der"},
+    {word: "Setzling", translation: "plant", article: "der"},
+    {word: "Keim", translation: "germe", article: "der"},
+    {word: "Trieb", translation: "pousse", article: "der"},
+    {word: "Knospe", translation: "bourgeon", article: "die"},
+    {word: "Blüte", translation: "fleur", article: "die"},
+    {word: "Ernte", translation: "récolte", article: "die"},
+    
+    // Météorologie spécialisée
+    {word: "Barometer", translation: "baromètre", article: "das"},
+    {word: "Hygrometer", translation: "hygromètre", article: "das"},
+    {word: "Anemometer", translation: "anémomètre", article: "das"},
+    {word: "Windfahne", translation: "girouette", article: "die"},
+    {word: "Isobare", translation: "isobare", article: "die"},
+    {word: "Isotherme", translation: "isotherme", article: "die"},
+    {word: "Zyklone", translation: "cyclone", article: "die"},
+    {word: "Antizyklone", translation: "anticyclone", article: "die"},
+    {word: "Front", translation: "front", article: "die"},
+    {word: "Druckgefälle", translation: "gradient de pression", article: "das"},
+    
+    // Minéralogie et géologie
+    {word: "Quarz", translation: "quartz", article: "der"},
+    {word: "Feldspat", translation: "feldspath", article: "der"},
+    {word: "Glimmer", translation: "mica", article: "der"},
+    {word: "Basalt", translation: "basalte", article: "der"},
+    {word: "Obsidian", translation: "obsidienne", article: "der"},
+    {word: "Porphyr", translation: "porphyre", article: "der"},
+    {word: "Gneis", translation: "gneiss", article: "der"},
+    {word: "Schist", translation: "schiste", article: "der"},
+    {word: "Tuff", translation: "tuf", article: "der"},
+    {word: "Mergel", translation: "marne", article: "der"},
+    
+    // Concepts anthropologiques
+    {word: "Ethnologie", translation: "ethnologie", article: "die"},
+    {word: "Folklore", translation: "folklore", article: "die"},
+    {word: "Ritual", translation: "rituel", article: "das"},
+    {word: "Mythos", translation: "mythe", article: "der"},
+    {word: "Legende", translation: "légende", article: "die"},
+    {word: "Sage", translation: "saga", article: "die"},
+    {word: "Totem", translation: "totem", article: "das"},
+    {word: "Tabu", translation: "tabou", article: "das"},
+    {word: "Aberglaube", translation: "superstition", article: "der"},
+    {word: "Brauch", translation: "coutume", article: "der"},
+    
+    // Linguistique spécialisée
+    {word: "Phonem", translation: "phonème", article: "das"},
+    {word: "Morphem", translation: "morphème", article: "das"},
+    {word: "Lexem", translation: "lexème", article: "das"},
+    {word: "Graphem", translation: "graphème", article: "das"},
+    {word: "Silbe", translation: "syllabe", article: "die"},
+    {word: "Akzent", translation: "accent", article: "der"},
+    {word: "Intonation", translation: "intonation", article: "die"},
+    {word: "Dialekt", translation: "dialecte", article: "der"},
+    {word: "Idiom", translation: "idiome", article: "das"},
+    {word: "Jargon", translation: "jargon", article: "der"},
+    
+    // Concepts spirituels et religieux
+    {word: "Meditation", translation: "méditation", article: "die"},
+    {word: "Kontemplation", translation: "contemplation", article: "die"},
+    {word: "Erleuchtung", translation: "illumination", article: "die"},
+    {word: "Ekstase", translation: "extase", article: "die"},
+    {word: "Trance", translation: "transe", article: "die"},
+    {word: "Mantra", translation: "mantra", article: "das"},
+    {word: "Chakra", translation: "chakra", article: "das"},
+    {word: "Aura", translation: "aura", article: "die"},
+    {word: "Karma", translation: "karma", article: "das"},
+    {word: "Nirvana", translation: "nirvana", article: "das"},
+    
+    // Architecture intérieure
+    {word: "Fassade", translation: "façade", article: "die"},
+    {word: "Säule", translation: "colonne", article: "die"},
+    {word: "Kapitell", translation: "chapiteau", article: "das"},
+    {word: "Sockel", translation: "socle", article: "der"},
+    {word: "Gesims", translation: "corniche", article: "das"},
+    {word: "Fries", translation: "frise", article: "der"},
+    {word: "Arkade", translation: "arcade", article: "die"},
+    {word: "Loggia", translation: "loggia", article: "die"},
+    {word: "Atrium", translation: "atrium", article: "das"},
+    {word: "Vestibül", translation: "vestibule", article: "das"},
+    
+    // Bijouterie et orfèvrerie
+    {word: "Edelmetall", translation: "métal précieux", article: "das"},
+    {word: "Schmuck", translation: "bijou", article: "der"},
+    {word: "Diadem", translation: "diadème", article: "das"},
+    {word: "Tiara", translation: "tiare", article: "die"},
+    {word: "Collier", translation: "collier", article: "das"},
+    {word: "Pendant", translation: "pendentif", article: "das"},
+    {word: "Brosche", translation: "broche", article: "die"},
+    {word: "Manschettenknopf", translation: "bouton de manchette", article: "der"},
+    {word: "Fassung", translation: "sertissure", article: "die"},
+    {word: "Gravur", translation: "gravure", article: "die"},
+    
+    // Finance et banque spécialisées
+    {word: "Portfolio", translation: "portefeuille", article: "das"},
+    {word: "Dividende", translation: "dividende", article: "die"},
+    {word: "Rendite", translation: "rendement", article: "die"},
+    {word: "Volatilität", translation: "volatilité", article: "die"},
+    {word: "Liquidität", translation: "liquidité", article: "die"},
+    {word: "Solvenz", translation: "solvabilité", article: "die"},
+    {word: "Bonität", translation: "solvabilité", article: "die"},
+    {word: "Rating", translation: "notation", article: "das"},
+    {word: "Benchmark", translation: "référence", article: "die"},
+    {word: "Hedge", translation: "couverture", article: "der"},
+    
+    // Écologie et environnement
+    {word: "Ökosystem", translation: "écosystème", article: "das"},
+    {word: "Biotop", translation: "biotope", article: "das"},
+    {word: "Habitat", translation: "habitat", article: "das"},
+    {word: "Biosphäre", translation: "biosphère", article: "die"},
+    {word: "Atmosphäre", translation: "atmosphère", article: "die"},
+    {word: "Hydrosphäre", translation: "hydrosphère", article: "die"},
+    {word: "Lithosphäre", translation: "lithosphère", article: "die"},
+    {word: "Biodiversität", translation: "biodiversité", article: "die"},
+    {word: "Nachhaltigkeit", translation: "durabilité", article: "die"},
+    {word: "Recycling", translation: "recyclage", article: "das"},
+    
+    // Urbanisme et architecture urbaine
+    {word: "Stadtplanung", translation: "urbanisme", article: "die"},
+    {word: "Boulevard", translation: "boulevard", article: "der"},
+    {word: "Promenade", translation: "promenade", article: "die"},
+    {word: "Esplanade", translation: "esplanade", article: "die"},
+    {word: "Parkanlage", translation: "parc", article: "die"},
+    {word: "Fontäne", translation: "fontaine", article: "die"},
+    {word: "Obelisk", translation: "obélisque", article: "der"},
+    {word: "Monument", translation: "monument", article: "das"},
+    {word: "Denkmal", translation: "mémorial", article: "das"},
+    {word: "Skulptur", translation: "sculpture", article: "die"},
+    
+    // Concepts politiques avancés
+    {word: "Demokratie", translation: "démocratie", article: "die"},
+    {word: "Autokratie", translation: "autocratie", article: "die"},
+    {word: "Oligarchie", translation: "oligarchie", article: "die"},
+    {word: "Anarchie", translation: "anarchie", article: "die"},
+    {word: "Hierarchie", translation: "hiérarchie", article: "die"},
+    {word: "Bürokratie", translation: "bureaucratie", article: "die"},
+    {word: "Diplomatie", translation: "diplomatie", article: "die"},
+    {word: "Souveränität", translation: "souveraineté", article: "die"},
+    {word: "Autonomie", translation: "autonomie", article: "die"},
+    {word: "Hegemonie", translation: "hégémonie", article: "die"},
+    
+    // Radiologie et imagerie médicale
+    {word: "Röntgen", translation: "radiographie", article: "das"},
+    {word: "Ultraschall", translation: "échographie", article: "der"},
+    {word: "Tomographie", translation: "tomographie", article: "die"},
+    {word: "Endoskopie", translation: "endoscopie", article: "die"},
+    {word: "Biopsie", translation: "biopsie", article: "die"},
+    {word: "Diagnose", translation: "diagnostic", article: "die"},
+    {word: "Prognose", translation: "pronostic", article: "die"},
+    {word: "Therapie", translation: "thérapie", article: "die"},
+    {word: "Rehabilitation", translation: "rééducation", article: "die"},
+    {word: "Prophylaxe", translation: "prophylaxie", article: "die"},
+    
+    // Parfumerie et cosmétique
+    {word: "Parfüm", translation: "parfum", article: "das"},
+    {word: "Duft", translation: "parfum/senteur", article: "der"},
+    {word: "Essenz", translation: "essence", article: "die"},
+    {word: "Extrakt", translation: "extrait", article: "der"},
+    {word: "Konzentrat", translation: "concentré", article: "das"},
+    {word: "Emulsion", translation: "émulsion", article: "die"},
+    {word: "Lotion", translation: "lotion", article: "die"},
+    {word: "Tinktur", translation: "teinture", article: "die"},
+    {word: "Serum", translation: "sérum", article: "das"},
+    {word: "Balsam", translation: "baume", article: "der"},
+    
+    // Concepts chimiques avancés
+    {word: "Isotop", translation: "isotope", article: "das"},
+    {word: "Ion", translation: "ion", article: "das"},
+    {word: "Kation", translation: "cation", article: "das"},
+    {word: "Anion", translation: "anion", article: "das"},
+    {word: "Radikal", translation: "radical", article: "das"},
+    {word: "Komplex", translation: "complexe", article: "der"},
+    {word: "Chelat", translation: "chélate", article: "das"},
+    {word: "Ligand", translation: "ligand", article: "der"},
+    {word: "Substrat", translation: "substrat", article: "das"},
+    {word: "Inhibitor", translation: "inhibiteur", article: "der"},
+    
+    // Concepts physiques avancés
+    {word: "Quantenmechanik", translation: "mécanique quantique", article: "die"},
+    {word: "Relativität", translation: "relativité", article: "die"},
+    {word: "Entropie", translation: "entropie", article: "die"},
+    {word: "Enthalpie", translation: "enthalpie", article: "die"},
+    {word: "Kinetik", translation: "cinétique", article: "die"},
+    {word: "Momentum", translation: "momentum", article: "das"},
+    {word: "Torque", translation: "couple", article: "das"},
+    {word: "Inertion", translation: "inertie", article: "die"},
+    {word: "Refraktion", translation: "réfraction", article: "die"},
+    {word: "Diffraktion", translation: "diffraction", article: "die"},
+    
+    // Arts martiaux et philosophies orientales
+    {word: "Dojo", translation: "dojo", article: "das"},
+    {word: "Kata", translation: "kata", article: "die"},
+    {word: "Kendo", translation: "kendo", article: "das"},
+    {word: "Aikido", translation: "aïkido", article: "das"},
+    {word: "Judo", translation: "judo", article: "das"},
+    {word: "Karate", translation: "karaté", article: "das"},
+    {word: "Taekwondo", translation: "taekwondo", article: "das"},
+    {word: "Kung Fu", translation: "kung fu", article: "das"},
+    {word: "Tai Chi", translation: "tai chi", article: "das"},
+    {word: "Qigong", translation: "qigong", article: "das"},
+    
+    // Psychanalyse et psychologie
+    {word: "Psychoanalyse", translation: "psychanalyse", article: "die"},
+    {word: "Übertragung", translation: "transfert", article: "die"},
+    {word: "Gegenübertragung", translation: "contre-transfert", article: "die"},
+    {word: "Verdrängung", translation: "refoulement", article: "die"},
+    {word: "Projektion", translation: "projection", article: "die"},
+    {word: "Sublimierung", translation: "sublimation", article: "die"},
+    {word: "Regression", translation: "régression", article: "die"},
+    {word: "Fixierung", translation: "fixation", article: "die"},
+    {word: "Abwehr", translation: "défense", article: "die"},
+    {word: "Katharsis", translation: "catharsis", article: "die"},
+    
+    // Concepts militaires (non professions)
+    {word: "Strategie", translation: "stratégie", article: "die"},
+    {word: "Taktik", translation: "tactique", article: "die"},
+    {word: "Logistik", translation: "logistique", article: "die"},
+    {word: "Aufklärung", translation: "reconnaissance", article: "die"},
+    {word: "Manöver", translation: "manœuvre", article: "das"},
+    {word: "Formation", translation: "formation", article: "die"},
+    {word: "Flanke", translation: "flanc", article: "die"},
+    {word: "Vormarsch", translation: "avancée", article: "der"},
+    {word: "Rückzug", translation: "retraite", article: "der"},
+    {word: "Belagerung", translation: "siège", article: "die"},
+    
+    // Navigation et orientation
+    {word: "Kompass", translation: "boussole", article: "der"},
+    {word: "Sextant", translation: "sextant", article: "der"},
+    {word: "Chronometer", translation: "chronomètre", article: "das"},
+    {word: "Koordinate", translation: "coordonnée", article: "die"},
+    {word: "Breitengrad", translation: "latitude", article: "der"},
+    {word: "Längengrad", translation: "longitude", article: "der"},
+    {word: "Peilung", translation: "relèvement", article: "die"},
+    {word: "Kurs", translation: "cap", article: "der"},
+    {word: "Route", translation: "route", article: "die"},
+    {word: "Destination", translation: "destination", article: "die"},
+    
+    // Concepts électroniques
+    {word: "Schaltung", translation: "circuit", article: "die"},
+    {word: "Platine", translation: "circuit imprimé", article: "die"},
+    {word: "Mikrochip", translation: "micropuce", article: "der"},
+    {word: "Halbleiter", translation: "semi-conducteur", article: "der"},
+    {word: "Verstärker", translation: "amplificateur", article: "der"},
+    {word: "Oszillator", translation: "oscillateur", article: "der"},
+    {word: "Frequenz", translation: "fréquence", article: "die"},
+    {word: "Impedanz", translation: "impédance", article: "die"},
+    {word: "Kapazität", translation: "capacité", article: "die"},
+    {word: "Induktivität", translation: "inductance", article: "die"},
+    
+    // Concepts automobiles
+    {word: "Motor", translation: "moteur", article: "der"},
+    {word: "Getriebe", translation: "transmission", article: "das"},
+    {word: "Kupplung", translation: "embrayage", article: "die"},
+    {word: "Bremse", translation: "frein", article: "die"},
+    {word: "Federung", translation: "suspension", article: "die"},
+    {word: "Lenkung", translation: "direction", article: "die"},
+    {word: "Differential", translation: "différentiel", article: "das"},
+    {word: "Turbolader", translation: "turbocompresseur", article: "der"},
+    {word: "Kompressor", translation: "compresseur", article: "der"},
+    {word: "Katalysator", translation: "catalyseur", article: "der"},
+    
+    // Océanographie
+    {word: "Gezeitenstrom", translation: "courant de marée", article: "der"},
+    {word: "Meeresströmung", translation: "courant marin", article: "die"},
+    {word: "Wellenberg", translation: "crête de vague", article: "der"},
+    {word: "Wellental", translation: "creux de vague", article: "das"},
+    {word: "Tsunami", translation: "tsunami", article: "der"},
+    {word: "Riff", translation: "récif", article: "das"},
+    {word: "Atoll", translation: "atoll", article: "das"},
+    {word: "Lagune", translation: "lagune", article: "die"},
+    {word: "Estuar", translation: "estuaire", article: "das"},
+    {word: "Delta", translation: "delta", article: "das"},
+    
+    // Concepts mathématiques avancés
+    {word: "Vektor", translation: "vecteur", article: "der"},
+    {word: "Matrix", translation: "matrice", article: "die"},
+    {word: "Tensor", translation: "tenseur", article: "der"},
+    {word: "Determinante", translation: "déterminant", article: "die"},
+    {word: "Eigenvektor", translation: "vecteur propre", article: "der"},
+    {word: "Eigenwert", translation: "valeur propre", article: "der"},
+    {word: "Gradient", translation: "gradient", article: "der"},
+    {word: "Divergenz", translation: "divergence", article: "die"},
+    {word: "Rotation", translation: "rotationnel", article: "die"},
+    {word: "Laplace", translation: "laplacien", article: "der"},
+    
+    // Derniers concepts neutres
+    {word: "Pendant", translation: "pendant", article: "das"},
+    {word: "Interim", translation: "intérim", article: "das"},
+    {word: "Ultimatum", translation: "ultimatum", article: "das"},
+    {word: "Memorandum", translation: "mémorandum", article: "das"},
+    {word: "Addendum", translation: "addendum", article: "das"},
+    {word: "Corrigendum", translation: "corrigendum", article: "das"},
+    {word: "Referendum", translation: "référendum", article: "das"},
+    {word: "Moratorium", translation: "moratoire", article: "das"},
+    {word: "Aquarium", translation: "aquarium", article: "das"},
+    {word: "Terrarium", translation: "terrarium", article: "das"},
+    
+    // Derniers concepts masculins
+    {word: "Terminus", translation: "terminus", article: "der"},
+    {word: "Locus", translation: "lieu", article: "der"},
+    {word: "Campus", translation: "campus", article: "der"},
+    {word: "Bonus", translation: "bonus", article: "der"},
+    {word: "Malus", translation: "malus", article: "der"},
+    {word: "Numerus", translation: "nombre", article: "der"},
+    {word: "Modus", translation: "mode", article: "der"},
+    {word: "Casus", translation: "cas", article: "der"},
+    {word: "Status", translation: "statut", article: "der"},
+    {word: "Hiatus", translation: "hiatus", article: "der"},
+    
+    // Derniers concepts féminins
+    {word: "Formel", translation: "formule", article: "die"},
+    {word: "Kapsel", translation: "capsule", article: "die"},
+    {word: "Spiral", translation: "spirale", article: "die"},
+    {word: "Kurve", translation: "courbe", article: "die"},
+    {word: "Tangente", translation: "tangente", article: "die"},
+    {word: "Sekante", translation: "sécante", article: "die"},
+    {word: "Asymptote", translation: "asymptote", article: "die"},
+    {word: "Hyperbel", translation: "hyperbole", article: "die"},
+    {word: "Parabel", translation: "parabole", article: "die"},
+    {word: "Ellipse", translation: "ellipse", article: "die"},
+
+    // Mots spécifiques demandés
+    {word: "Verein", translation: "association", article: "der"},
+    {word: "Bad", translation: "salle de bain", article: "das"},
+    {word: "Flur", translation: "couloir", article: "der"},
+    {word: "Kaffee", translation: "café", article: "der"},
+    {word: "Apartment", translation: "appartement", article: "das"},
+    {word: "Balkon", translation: "balcon", article: "der"},
+    {word: "Ticket", translation: "ticket", article: "das"},
+    {word: "Bauch", translation: "ventre", article: "der"},
+
+    // 40 animaux les plus communs
+    {word: "Hund", translation: "chien", article: "der"},
+    {word: "Katze", translation: "chat", article: "die"},
+    {word: "Pferd", translation: "cheval", article: "das"},
+    {word: "Kuh", translation: "vache", article: "die"},
+    {word: "Schwein", translation: "cochon", article: "das"},
+    {word: "Schaf", translation: "mouton", article: "das"},
+    {word: "Ziege", translation: "chèvre", article: "die"},
+    {word: "Huhn", translation: "poule", article: "das"},
+    {word: "Ente", translation: "canard", article: "die"},
+    {word: "Gans", translation: "oie", article: "die"},
+    {word: "Truthahn", translation: "dinde", article: "der"},
+    {word: "Hase", translation: "lièvre", article: "der"},
+    {word: "Maus", translation: "souris", article: "die"},
+    {word: "Ratte", translation: "rat", article: "die"},
+    {word: "Hamster", translation: "hamster", article: "der"},
+    {word: "Vogel", translation: "oiseau", article: "der"},
+    {word: "Adler", translation: "aigle", article: "der"},
+    {word: "Falke", translation: "faucon", article: "der"},
+    {word: "Eule", translation: "hibou", article: "die"},
+    {word: "Taube", translation: "pigeon", article: "die"},
+    {word: "Krähe", translation: "corneille", article: "die"},
+    {word: "Spatz", translation: "moineau", article: "der"},
+    {word: "Fisch", translation: "poisson", article: "der"},
+    {word: "Hai", translation: "requin", article: "der"},
+    {word: "Wal", translation: "baleine", article: "der"},
+    {word: "Delfin", translation: "dauphin", article: "der"},
+    {word: "Seehund", translation: "phoque", article: "der"},
+    {word: "Löwe", translation: "lion", article: "der"},
+    {word: "Tiger", translation: "tigre", article: "der"},
+    {word: "Elefant", translation: "éléphant", article: "der"},
+    {word: "Giraffe", translation: "girafe", article: "die"},
+    {word: "Zebra", translation: "zèbre", article: "das"},
+    {word: "Affe", translation: "singe", article: "der"},
+    {word: "Bär", translation: "ours", article: "der"},
+    {word: "Wolf", translation: "loup", article: "der"},
+    {word: "Fuchs", translation: "renard", article: "der"},
+    {word: "Hirsch", translation: "cerf", article: "der"},
+    {word: "Reh", translation: "chevreuil", article: "das"},
+    {word: "Wildschwein", translation: "sanglier", article: "das"},
+    {word: "Frosch", translation: "grenouille", article: "der"},
+    {word: "Kröte", translation: "crapaud", article: "die"},
+    {word: "Schlange", translation: "serpent", article: "die"},
+    {word: "Echse", translation: "lézard", article: "die"},
+    {word: "Schildkröte", translation: "tortue", article: "die"},
+    {word: "Spinne", translation: "araignée", article: "die"},
+    {word: "Biene", translation: "abeille", article: "die"},
+    {word: "Wespe", translation: "guêpe", article: "die"},
+    {word: "Ameise", translation: "fourmi", article: "die"},
+    {word: "Käfer", translation: "scarabée", article: "der"},
+    {word: "Schmetterling", translation: "papillon", article: "der"},
+    {word: "Libelle", translation: "libellule", article: "die"},
+    {word: "Fliege", translation: "mouche", article: "die"},
+    {word: "Mücke", translation: "moustique", article: "die"},
+
+    // 40 parties du corps les plus communes
+    {word: "Kopf", translation: "tête", article: "der"},
+    {word: "Haar", translation: "cheveu", article: "das"},
+    {word: "Stirn", translation: "front", article: "die"},
+    {word: "Auge", translation: "œil", article: "das"},
+    {word: "Nase", translation: "nez", article: "die"},
+    {word: "Mund", translation: "bouche", article: "der"},
+    {word: "Lippe", translation: "lèvre", article: "die"},
+    {word: "Zahn", translation: "dent", article: "der"},
+    {word: "Zunge", translation: "langue", article: "die"},
+    {word: "Ohr", translation: "oreille", article: "das"},
+    {word: "Hals", translation: "cou", article: "der"},
+    {word: "Schulter", translation: "épaule", article: "die"},
+    {word: "Arm", translation: "bras", article: "der"},
+    {word: "Ellbogen", translation: "coude", article: "der"},
+    {word: "Hand", translation: "main", article: "die"},
+    {word: "Finger", translation: "doigt", article: "der"},
+    {word: "Daumen", translation: "pouce", article: "der"},
+    {word: "Nagel", translation: "ongle", article: "der"},
+    {word: "Brust", translation: "poitrine", article: "die"},
+    {word: "Rücken", translation: "dos", article: "der"},
+    // Bauch déjà inclus dans les mots spécifiques
+    {word: "Hüfte", translation: "hanche", article: "die"},
+    {word: "Bein", translation: "jambe", article: "das"},
+    {word: "Knie", translation: "genou", article: "das"},
+    {word: "Fuß", translation: "pied", article: "der"},
+    {word: "Zehe", translation: "orteil", article: "die"},
+    {word: "Haut", translation: "peau", article: "die"},
+    {word: "Knochen", translation: "os", article: "der"},
+    {word: "Muskel", translation: "muscle", article: "der"},
+    {word: "Herz", translation: "cœur", article: "das"},
+    {word: "Lunge", translation: "poumon", article: "die"},
+    {word: "Leber", translation: "foie", article: "die"},
+    {word: "Niere", translation: "rein", article: "die"},
+    {word: "Magen", translation: "estomac", article: "der"},
+    {word: "Darm", translation: "intestin", article: "der"},
+    {word: "Blase", translation: "vessie", article: "die"},
+    {word: "Gehirn", translation: "cerveau", article: "das"},
+    {word: "Nerv", translation: "nerf", article: "der"},
+    {word: "Blut", translation: "sang", article: "das"},
+    {word: "Vene", translation: "veine", article: "die"},
+    {word: "Arterie", translation: "artère", article: "die"},
+    {word: "Kinn", translation: "menton", article: "das"},
+    {word: "Wange", translation: "joue", article: "die"},
+    {word: "Kehle", translation: "gorge", article: "die"},
+    {word: "Handgelenk", translation: "poignet", article: "das"},
+    {word: "Fußgelenk", translation: "cheville", article: "das"},
+    {word: "Wirbelsäule", translation: "colonne vertébrale", article: "die"},
+    {word: "Rippe", translation: "côte", article: "die"},
+    {word: "Muskeln", translation: "muscles", article: "die"},
+    {word: "Sehne", translation: "tendon", article: "die"},
+
+        // Parties intimes et reproductives (vocabulaire médical de base)
+    {word: "Penis", translation: "pénis", article: "der"},
+    {word: "Vagina", translation: "vagin", article: "die"},
+    {word: "Vulva", translation: "vulve", article: "die"},
+    {word: "Hoden", translation: "testicule", article: "der"},
+    {word: "Hodensack", translation: "scrotum", article: "der"},
+    {word: "Brust", translation: "sein", article: "die"},
+    {word: "Brustwarze", translation: "téton", article: "die"},
+    {word: "Gebärmutter", translation: "utérus", article: "die"},
+    {word: "Eierstock", translation: "ovaire", article: "der"},
+    {word: "Prostata", translation: "prostate", article: "die"},
+
+    // Autres parties du corps qui pourraient manquer
+    {word: "Rumpf", translation: "torse", article: "der"},
+    {word: "Torso", translation: "torse", article: "der"},
+    {word: "Taille", translation: "taille", article: "die"},
+    {word: "Lendenwirbel", translation: "vertèbre lombaire", article: "der"},
+    {word: "Steißbein", translation: "coccyx", article: "das"},
+    {word: "Gesäß", translation: "fesses", article: "das"},
+    {word: "Po", translation: "derrière", article: "der"},
+    {word: "Hintern", translation: "fesses (familier)", article: "der"},
+    {word: "After", translation: "anus", article: "der"},
+    {word: "Damm", translation: "périnée", article: "der"},
+
+    // Parties du visage détaillées
+    {word: "Augenbraue", translation: "sourcil", article: "die"},
+    {word: "Wimper", translation: "cil", article: "die"},
+    {word: "Augenlid", translation: "paupière", article: "das"},
+    {word: "Pupille", translation: "pupille", article: "die"},
+    {word: "Iris", translation: "iris", article: "die"},
+    {word: "Nasenloch", translation: "narine", article: "das"},
+    {word: "Nasenflügel", translation: "aile du nez", article: "der"},
+    {word: "Nasenscheidewand", translation: "cloison nasale", article: "die"},
+    {word: "Oberlippe", translation: "lèvre supérieure", article: "die"},
+    {word: "Unterlippe", translation: "lèvre inférieure", article: "die"},
+    {word: "Mundwinkel", translation: "coin de la bouche", article: "der"},
+    {word: "Zahnfleisch", translation: "gencive", article: "das"},
+    {word: "Gaumen", translation: "palais", article: "der"},
+    {word: "Rachen", translation: "pharynx", article: "der"},
+    {word: "Mandel", translation: "amygdale", article: "die"},
+
+    // Oreille détaillée
+    {word: "Ohrläppchen", translation: "lobe d'oreille", article: "das"},
+    {word: "Ohrmuschel", translation: "pavillon", article: "die"},
+    {word: "Gehörgang", translation: "conduit auditif", article: "der"},
+    {word: "Trommelfell", translation: "tympan", article: "das"},
+
+    // Main et pied détaillés
+    {word: "Handfläche", translation: "paume", article: "die"},
+    {word: "Handrücken", translation: "dos de la main", article: "der"},
+    {word: "Zeigefinger", translation: "index", article: "der"},
+    {word: "Mittelfinger", translation: "majeur", article: "der"},
+    {word: "Ringfinger", translation: "annulaire", article: "der"},
+    {word: "Kleiner Finger", translation: "auriculaire", article: "der"},
+    {word: "Knöchel", translation: "articulation", article: "der"},
+    {word: "Fußsohle", translation: "plante du pied", article: "die"},
+    {word: "Fußrücken", translation: "dos du pied", article: "der"},
+    {word: "Ferse", translation: "talon", article: "die"},
+    {word: "Ballen", translation: "coussin du pied", article: "der"},
+    {word: "Großzehe", translation: "gros orteil", article: "die"},
+
+    // Système circulatoire et lymphatique
+    {word: "Puls", translation: "pouls", article: "der"},
+    {word: "Schlagader", translation: "artère", article: "die"},
+    {word: "Blutader", translation: "veine", article: "die"},
+    {word: "Kapillare", translation: "capillaire", article: "die"},
+    {word: "Lymphknoten", translation: "ganglion lymphatique", article: "der"},
+    {word: "Milz", translation: "rate", article: "die"},
+
+    // Système digestif détaillé
+    {word: "Speiseröhre", translation: "œsophage", article: "die"},
+    {word: "Zwölffingerdarm", translation: "duodénum", article: "der"},
+    {word: "Dünndarm", translation: "intestin grêle", article: "der"},
+    {word: "Dickdarm", translation: "gros intestin", article: "der"},
+    {word: "Blinddarm", translation: "appendice", article: "der"},
+    {word: "Mastdarm", translation: "rectum", article: "der"},
+    {word: "Gallenblase", translation: "vésicule biliaire", article: "die"},
+    {word: "Bauchspeicheldrüse", translation: "pancréas", article: "die"},
+
+    // Système respiratoire
+    {word: "Luftröhre", translation: "trachée", article: "die"},
+    {word: "Bronchie", translation: "bronche", article: "die"},
+    {word: "Lungenbläschen", translation: "alvéole", article: "das"},
+    {word: "Zwerchfell", translation: "diaphragme", article: "das"},
+
+    // Système nerveux
+    {word: "Großhirn", translation: "cerveau", article: "das"},
+    {word: "Kleinhirn", translation: "cervelet", article: "das"},
+    {word: "Hirnstamm", translation: "tronc cérébral", article: "der"},
+    {word: "Rückenmark", translation: "moelle épinière", article: "das"},
+    {word: "Reflex", translation: "réflexe", article: "der"},
+
+    // Système endocrinien
+    {word: "Schilddrüse", translation: "thyroïde", article: "die"},
+    {word: "Nebenniere", translation: "surrénale", article: "die"},
+    {word: "Hypophyse", translation: "hypophyse", article: "die"},
+
+    // Système musculo-squelettique
+    {word: "Bizeps", translation: "biceps", article: "der"},
+    {word: "Trizeps", translation: "triceps", article: "der"},
+    {word: "Wade", translation: "mollet", article: "die"},
+    {word: "Schienbein", translation: "tibia", article: "das"},
+    {word: "Wadenbein", translation: "péroné", article: "das"},
+    {word: "Oberschenkel", translation: "cuisse", article: "der"},
+    {word: "Unterschenkel", translation: "jambe", article: "der"},
+    {word: "Oberarm", translation: "bras", article: "der"},
+    {word: "Unterarm", translation: "avant-bras", article: "der"},
+    {word: "Schlüsselbein", translation: "clavicule", article: "das"},
+    {word: "Schulterblatt", translation: "omoplate", article: "das"},
+    {word: "Brustbein", translation: "sternum", article: "das"},
+    {word: "Beckenknochen", translation: "os du bassin", article: "der"},
+
+    // Articulations
+    {word: "Gelenk", translation: "articulation", article: "das"},
+    {word: "Kniegelenk", translation: "articulation du genou", article: "das"},
+    {word: "Hüftgelenk", translation: "articulation de la hanche", article: "das"},
+    {word: "Schultergelenk", translation: "articulation de l'épaule", article: "das"},
+    {word: "Ellbogengelenk", translation: "articulation du coude", article: "das"},
+
+    // Peau et appendices
+    {word: "Pore", translation: "pore", article: "die"},
+    {word: "Schweißdrüse", translation: "glande sudoripare", article: "die"},
+    {word: "Talgdrüse", translation: "glande sébacée", article: "die"},
+    {word: "Haarfollikel", translation: "follicule pileux", article: "der"},
+    {word: "Schuppe", translation: "pellicule", article: "die"},
+    {word: "Leberfleck", translation: "grain de beauté", article: "der"},
+    {word: "Narbe", translation: "cicatrice", article: "die"},
+
+    // Fluides corporels
+    {word: "Speichel", translation: "salive", article: "der"},
+    {word: "Schweiß", translation: "sueur", article: "der"},
+    {word: "Träne", translation: "larme", article: "die"},
+    {word: "Schleim", translation: "mucus", article: "der"},
+    {word: "Urin", translation: "urine", article: "der"},
+    {word: "Stuhl", translation: "selles", article: "der"},
+    {word: "Eiter", translation: "pus", article: "der"},
+
+    // Mots supplémentaires pour compléter la catégorie de base
+    {word: "Küche", translation: "cuisine", article: "die"},
+    {word: "Wohnzimmer", translation: "salon", article: "das"},
+    {word: "Schlafzimmer", translation: "chambre", article: "das"},
+    {word: "Badezimmer", translation: "salle de bain", article: "das"},
+    {word: "Toilette", translation: "toilettes", article: "die"},
+    {word: "Keller", translation: "cave", article: "der"},
+    {word: "Dachboden", translation: "grenier", article: "der"},
+    {word: "Garage", translation: "garage", article: "die"},
+    {word: "Garten", translation: "jardin", article: "der"},
+    {word: "Terrasse", translation: "terrasse", article: "die"},
+    {word: "Fenster", translation: "fenêtre", article: "das"},
+    {word: "Tür", translation: "porte", article: "die"},
+    {word: "Wand", translation: "mur", article: "die"},
+    {word: "Decke", translation: "plafond", article: "die"},
+    {word: "Boden", translation: "sol", article: "der"},
+    {word: "Treppe", translation: "escalier", article: "die"},
+    {word: "Aufzug", translation: "ascenseur", article: "der"},
+    {word: "Dach", translation: "toit", article: "das"},
+    {word: "Kamin", translation: "cheminée", article: "der"},
+
+        // Concepts émotionnels de base (genres surprenants)
+    {word: "Angst", translation: "peur", article: "die"},
+    {word: "Mut", translation: "courage", article: "der"},
+    {word: "Wut", translation: "rage", article: "die"},
+    {word: "Stolz", translation: "fierté", article: "der"},
+    {word: "Neid", translation: "envie", article: "der"},
+    {word: "Zorn", translation: "colère", article: "der"},
+    {word: "Scham", translation: "honte", article: "die"},
+    {word: "Schuld", translation: "culpabilité", article: "die"},
+    {word: "Zweifel", translation: "doute", article: "der"},
+    {word: "Sorge", translation: "souci", article: "die"},
+
+    // Couleurs substantivées (toujours neutres - piège!)
+    {word: "Rot", translation: "rouge (couleur)", article: "das"},
+    {word: "Blau", translation: "bleu (couleur)", article: "das"},
+    {word: "Grün", translation: "vert (couleur)", article: "das"},
+    {word: "Gelb", translation: "jaune (couleur)", article: "das"},
+    {word: "Schwarz", translation: "noir (couleur)", article: "das"},
+    {word: "Weiß", translation: "blanc (couleur)", article: "das"},
+    {word: "Grau", translation: "gris (couleur)", article: "das"},
+    {word: "Rosa", translation: "rose (couleur)", article: "das"},
+    {word: "Lila", translation: "violet (couleur)", article: "das"},
+    {word: "Orange", translation: "orange (couleur)", article: "das"},
+
+    // Concepts abstraits substantivés (souvent neutres)
+    {word: "Gute", translation: "le bien", article: "das"},
+    {word: "Böse", translation: "le mal", article: "das"},
+    {word: "Schöne", translation: "le beau", article: "das"},
+    {word: "Neue", translation: "le nouveau", article: "das"},
+    {word: "Alte", translation: "l'ancien", article: "das"},
+    {word: "Wichtige", translation: "l'important", article: "das"},
+    {word: "Richtige", translation: "le correct", article: "das"},
+    {word: "Falsche", translation: "le faux", article: "das"},
+
+    // Technologie moderne (genres souvent surprenants)
+    {word: "Computer", translation: "ordinateur", article: "der"},
+    {word: "Laptop", translation: "portable", article: "der"},
+    {word: "Monitor", translation: "moniteur", article: "der"},
+    {word: "Drucker", translation: "imprimante", article: "der"},
+    {word: "Scanner", translation: "scanner", article: "der"},
+    {word: "Router", translation: "routeur", article: "der"},
+    {word: "Modem", translation: "modem", article: "das"},
+    {word: "Internet", translation: "internet", article: "das"},
+    {word: "Web", translation: "web", article: "das"},
+    {word: "Email", translation: "email", article: "die"},
+    {word: "SMS", translation: "SMS", article: "die"},
+    {word: "App", translation: "application", article: "die"},
+    {word: "Software", translation: "logiciel", article: "die"},
+    {word: "Hardware", translation: "matériel", article: "die"},
+
+    // Concepts temporels (mélanges de genres)
+    {word: "Moment", translation: "moment", article: "der"},
+    {word: "Augenblick", translation: "instant", article: "der"},
+    {word: "Sekunde", translation: "seconde", article: "die"},
+    {word: "Minute", translation: "minute", article: "die"},
+    {word: "Stunde", translation: "heure", article: "die"},
+    {word: "Tag", translation: "jour", article: "der"},
+    {word: "Woche", translation: "semaine", article: "die"},
+    {word: "Monat", translation: "mois", article: "der"},
+    {word: "Jahr", translation: "année", article: "das"},
+    {word: "Jahrhundert", translation: "siècle", article: "das"},
+
+    // Météo et nature (genres mixtes)
+    {word: "Wetter", translation: "temps/météo", article: "das"},
+    {word: "Regen", translation: "pluie", article: "der"},
+    {word: "Schnee", translation: "neige", article: "der"},
+    {word: "Hagel", translation: "grêle", article: "der"},
+    {word: "Wind", translation: "vent", article: "der"},
+    {word: "Sturm", translation: "tempête", article: "der"},
+    {word: "Sonne", translation: "soleil", article: "die"},
+    {word: "Mond", translation: "lune", article: "der"},
+    {word: "Stern", translation: "étoile", article: "der"},
+    {word: "Wolke", translation: "nuage", article: "die"},
+    {word: "Himmel", translation: "ciel", article: "der"},
+    {word: "Erde", translation: "terre", article: "die"},
+
+    // Nourriture de base (genres non évidents)
+    {word: "Brot", translation: "pain", article: "das"},
+    {word: "Butter", translation: "beurre", article: "die"},
+    {word: "Käse", translation: "fromage", article: "der"},
+    {word: "Fleisch", translation: "viande", article: "das"},
+    {word: "Gemüse", translation: "légume", article: "das"},
+    {word: "Obst", translation: "fruit", article: "das"},
+    {word: "Salat", translation: "salade", article: "der"},
+    {word: "Suppe", translation: "soupe", article: "die"},
+    {word: "Reis", translation: "riz", article: "der"},
+    {word: "Nudel", translation: "pâte", article: "die"},
+
+    // Boissons (genres variés)
+    {word: "Wasser", translation: "eau", article: "das"},
+    {word: "Milch", translation: "lait", article: "die"},
+    {word: "Saft", translation: "jus", article: "der"},
+    {word: "Tee", translation: "thé", article: "der"},
+    {word: "Wein", translation: "vin", article: "der"},
+    {word: "Bier", translation: "bière", article: "das"},
+    {word: "Schnaps", translation: "eau-de-vie", article: "der"},
+    {word: "Cocktail", translation: "cocktail", article: "der"},
+    {word: "Limonade", translation: "limonade", article: "die"},
+    {word: "Cola", translation: "cola", article: "die"},
+
+    // Vêtements de base (genres surprenants)
+    {word: "Hemd", translation: "chemise", article: "das"},
+    {word: "Hose", translation: "pantalon", article: "die"},
+    {word: "Rock", translation: "jupe", article: "der"},
+    {word: "Kleid", translation: "robe", article: "das"},
+    {word: "Mantel", translation: "manteau", article: "der"},
+    {word: "Jacke", translation: "veste", article: "die"},
+    {word: "Pullover", translation: "pull", article: "der"},
+    {word: "T-Shirt", translation: "t-shirt", article: "das"},
+    {word: "Schuh", translation: "chaussure", article: "der"},
+    {word: "Socke", translation: "chaussette", article: "die"},
+    {word: "Strumpf", translation: "bas", article: "der"},
+    {word: "Hut", translation: "chapeau", article: "der"},
+    {word: "Mütze", translation: "bonnet", article: "die"},
+
+    // Famille et relations (mélange de genres)
+    {word: "Familie", translation: "famille", article: "die"},
+    {word: "Ehe", translation: "mariage", article: "die"},
+    {word: "Hochzeit", translation: "mariage (cérémonie)", article: "die"},
+
+    // École et éducation (objets, pas professions)
+    {word: "Schule", translation: "école", article: "die"},
+    {word: "Klasse", translation: "classe", article: "die"},
+    {word: "Kurs", translation: "cours", article: "der"},
+    {word: "Stunde", translation: "cours/heure", article: "die"},
+    {word: "Pause", translation: "pause", article: "die"},
+    {word: "Buch", translation: "livre", article: "das"},
+    {word: "Heft", translation: "cahier", article: "das"},
+    {word: "Bleistift", translation: "crayon", article: "der"},
+    {word: "Kugelschreiber", translation: "stylo", article: "der"},
+    {word: "Radiergummi", translation: "gomme", article: "der"},
+    {word: "Lineal", translation: "règle", article: "das"},
+    {word: "Tafel", translation: "tableau", article: "die"},
+    {word: "Kreide", translation: "craie", article: "die"},
+
+    // Transport et véhicules
+    {word: "Auto", translation: "voiture", article: "das"},
+    {word: "Bus", translation: "bus", article: "der"},
+    {word: "Straßenbahn", translation: "tramway", article: "die"},
+    {word: "U-Bahn", translation: "métro", article: "die"},
+    {word: "Zug", translation: "train", article: "der"},
+    {word: "Taxi", translation: "taxi", article: "das"},
+    {word: "LKW", translation: "camion", article: "der"},
+    {word: "Straße", translation: "rue", article: "die"},
+    {word: "Weg", translation: "chemin", article: "der"},
+    {word: "Platz", translation: "place", article: "der"},
+    {word: "Brücke", translation: "pont", article: "die"},
+    {word: "Tunnel", translation: "tunnel", article: "der"},
+
+    // Concepts de voyage
+    {word: "Reise", translation: "voyage", article: "die"},
+    {word: "Urlaub", translation: "vacances", article: "der"},
+    {word: "Koffer", translation: "valise", article: "der"},
+    {word: "Gepäck", translation: "bagage", article: "das"},
+    {word: "Pass", translation: "passeport", article: "der"},
+    {word: "Visum", translation: "visa", article: "das"},
+    {word: "Hotel", translation: "hôtel", article: "das"},
+    {word: "Pension", translation: "pension", article: "die"},
+    {word: "Hostel", translation: "auberge", article: "das"},
+
+    // Concepts d'argent (genres mixtes)
+    {word: "Geld", translation: "argent", article: "das"},
+    {word: "Euro", translation: "euro", article: "der"},
+    {word: "Cent", translation: "centime", article: "der"},
+    {word: "Mark", translation: "mark", article: "die"},
+    {word: "Münze", translation: "pièce", article: "die"},
+    {word: "Schein", translation: "billet", article: "der"},
+    {word: "Karte", translation: "carte", article: "die"},
+    {word: "Konto", translation: "compte", article: "das"},
+    {word: "Bank", translation: "banque", article: "die"},
+    {word: "Automat", translation: "distributeur", article: "der"},
+
+    // Espaces urbains
+    {word: "Stadt", translation: "ville", article: "die"},
+    {word: "Dorf", translation: "village", article: "das"},
+    {word: "Markt", translation: "marché", article: "der"},
+    {word: "Laden", translation: "magasin", article: "der"},
+    {word: "Geschäft", translation: "commerce", article: "das"},
+    {word: "Restaurant", translation: "restaurant", article: "das"},
+    {word: "Café", translation: "café", article: "das"},
+    {word: "Bar", translation: "bar", article: "die"},
+    {word: "Kino", translation: "cinéma", article: "das"},
+    {word: "Park", translation: "parc", article: "der"},
+
+    // Concepts de santé de base
+    {word: "Gesundheit", translation: "santé", article: "die"},
+    {word: "Krankheit", translation: "maladie", article: "die"},
+    {word: "Schmerz", translation: "douleur", article: "der"},
+    {word: "Fieber", translation: "fièvre", article: "das"},
+    {word: "Husten", translation: "toux", article: "der"},
+    {word: "Schnupfen", translation: "rhume", article: "der"},
+    {word: "Kopfschmerz", translation: "mal de tête", article: "der"},
+    {word: "Medikament", translation: "médicament", article: "das"},
+    {word: "Tablette", translation: "comprimé", article: "die"},
+    {word: "Spritze", translation: "piqûre", article: "die"},
+
+    // Concepts de travail (objets, pas professions)
+    {word: "Arbeit", translation: "travail", article: "die"},
+    {word: "Job", translation: "emploi", article: "der"},
+    {word: "Beruf", translation: "métier", article: "der"},
+    {word: "Büro", translation: "bureau", article: "das"},
+    {word: "Fabrik", translation: "usine", article: "die"},
+    {word: "Werkstatt", translation: "atelier", article: "die"},
+    {word: "Baustelle", translation: "chantier", article: "die"},
+    {word: "Termin", translation: "rendez-vous", article: "der"},
+    {word: "Vertrag", translation: "contrat", article: "der"},
+    {word: "Gehalt", translation: "salaire", article: "das"},
+
+    // Concepts sportifs
+    {word: "Sport", translation: "sport", article: "der"},
+    {word: "Spiel", translation: "jeu", article: "das"},
+    {word: "Match", translation: "match", article: "das"},
+    {word: "Ball", translation: "ballon", article: "der"},
+    {word: "Team", translation: "équipe", article: "das"},
+    {word: "Training", translation: "entraînement", article: "das"},
+    {word: "Fitness", translation: "fitness", article: "die"},
+    {word: "Gym", translation: "salle de sport", article: "das"},
+    {word: "Pool", translation: "piscine", article: "der"},
+    {word: "Sauna", translation: "sauna", article: "die"},
+
+        // Nourriture étendue - Fruits spécifiques
+    {word: "Apfel", translation: "pomme", article: "der"},
+    {word: "Birne", translation: "poire", article: "die"},
+    {word: "Banane", translation: "banane", article: "die"},
+    {word: "Orange", translation: "orange", article: "die"},
+    {word: "Zitrone", translation: "citron", article: "die"},
+    {word: "Erdbeere", translation: "fraise", article: "die"},
+    {word: "Kirsche", translation: "cerise", article: "die"},
+    {word: "Pfirsich", translation: "pêche", article: "der"},
+    {word: "Pflaume", translation: "prune", article: "die"},
+    {word: "Traube", translation: "raisin", article: "die"},
+    {word: "Melone", translation: "melon", article: "die"},
+    {word: "Ananas", translation: "ananas", article: "die"},
+
+    // Légumes spécifiques
+    {word: "Kartoffel", translation: "pomme de terre", article: "die"},
+    {word: "Tomate", translation: "tomate", article: "die"},
+    {word: "Zwiebel", translation: "oignon", article: "die"},
+    {word: "Knoblauch", translation: "ail", article: "der"},
+    {word: "Möhre", translation: "carotte", article: "die"},
+    {word: "Kohl", translation: "chou", article: "der"},
+    {word: "Paprika", translation: "poivron", article: "der"},
+    {word: "Gurke", translation: "concombre", article: "die"},
+    {word: "Pilz", translation: "champignon", article: "der"},
+    {word: "Erbse", translation: "petit pois", article: "die"},
+    {word: "Bohne", translation: "haricot", article: "die"},
+    {word: "Spinat", translation: "épinard", article: "der"},
+
+    // Épices et condiments
+    {word: "Salz", translation: "sel", article: "das"},
+    {word: "Pfeffer", translation: "poivre", article: "der"},
+    {word: "Zucker", translation: "sucre", article: "der"},
+    {word: "Honig", translation: "miel", article: "der"},
+    {word: "Öl", translation: "huile", article: "das"},
+    {word: "Essig", translation: "vinaigre", article: "der"},
+    {word: "Senf", translation: "moutarde", article: "der"},
+    {word: "Ketchup", translation: "ketchup", article: "der"},
+    {word: "Mayonnaise", translation: "mayonnaise", article: "die"},
+
+    // Méthodes de cuisson et ustensiles
+    {word: "Pfanne", translation: "poêle", article: "die"},
+    {word: "Topf", translation: "casserole", article: "der"},
+    {word: "Messer", translation: "couteau", article: "das"},
+    {word: "Gabel", translation: "fourchette", article: "die"},
+    {word: "Löffel", translation: "cuillère", article: "der"},
+    {word: "Teller", translation: "assiette", article: "der"},
+    {word: "Schüssel", translation: "bol", article: "die"},
+    {word: "Tasse", translation: "tasse", article: "die"},
+    {word: "Glas", translation: "verre", article: "das"},
+    {word: "Flasche", translation: "bouteille", article: "die"},
+
+    // Desserts et pâtisserie
+    {word: "Kuchen", translation: "gâteau", article: "der"},
+    {word: "Torte", translation: "tarte", article: "die"},
+    {word: "Keks", translation: "biscuit", article: "der"},
+    {word: "Schokolade", translation: "chocolat", article: "die"},
+    {word: "Eis", translation: "glace", article: "das"},
+    {word: "Sahne", translation: "crème", article: "die"},
+
+    // Loisirs et hobbies
+    {word: "Hobby", translation: "hobby", article: "das"},
+    {word: "Freizeit", translation: "temps libre", article: "die"},
+    {word: "Spaß", translation: "plaisir", article: "der"},
+    {word: "Spiel", translation: "jeu", article: "das"},
+    {word: "Puzzle", translation: "puzzle", article: "das"},
+    {word: "Karten", translation: "cartes", article: "die"},
+    {word: "Würfel", translation: "dé", article: "der"},
+    {word: "Sammlung", translation: "collection", article: "die"},
+    {word: "Basteln", translation: "bricolage", article: "das"},
+    {word: "Malen", translation: "peinture", article: "das"},
+    {word: "Zeichnen", translation: "dessin", article: "das"},
+    {word: "Lesen", translation: "lecture", article: "das"},
+    {word: "Garten", translation: "jardinage", article: "der"},
+    {word: "Angeln", translation: "pêche", article: "das"},
+    {word: "Wandern", translation: "randonnée", article: "das"},
+    {word: "Camping", translation: "camping", article: "das"},
+
+    // Sentiments et émotions nuancés
+    {word: "Freude", translation: "joie", article: "die"},
+    {word: "Trauer", translation: "tristesse", article: "die"},
+    {word: "Ärger", translation: "agacement", article: "der"},
+    {word: "Überraschung", translation: "surprise", article: "die"},
+    {word: "Enttäuschung", translation: "déception", article: "die"},
+    {word: "Erleichterung", translation: "soulagement", article: "die"},
+    {word: "Langeweile", translation: "ennui", article: "die"},
+    {word: "Interesse", translation: "intérêt", article: "das"},
+    {word: "Neugier", translation: "curiosité", article: "die"},
+    {word: "Vertrauen", translation: "confiance", article: "das"},
+    {word: "Misstrauen", translation: "méfiance", article: "das"},
+    {word: "Hoffnung", translation: "espoir", article: "die"},
+    {word: "Verzweiflung", translation: "désespoir", article: "die"},
+
+    // Outils et objets du quotidien
+    {word: "Werkzeug", translation: "outil", article: "das"},
+    {word: "Hammer", translation: "marteau", article: "der"},
+    {word: "Schraubenzieher", translation: "tournevis", article: "der"},
+    {word: "Zange", translation: "pince", article: "die"},
+    {word: "Säge", translation: "scie", article: "die"},
+    {word: "Bohrer", translation: "perceuse", article: "der"},
+    {word: "Nagel", translation: "clou", article: "der"},
+    {word: "Schraube", translation: "vis", article: "die"},
+    {word: "Draht", translation: "fil de fer", article: "der"},
+    {word: "Seil", translation: "corde", article: "das"},
+
+    // Matériaux de base
+    {word: "Holz", translation: "bois", article: "das"},
+    {word: "Metall", translation: "métal", article: "das"},
+    {word: "Eisen", translation: "fer", article: "das"},
+    {word: "Stahl", translation: "acier", article: "der"},
+    {word: "Glas", translation: "verre (matériau)", article: "das"},
+    {word: "Plastik", translation: "plastique", article: "das"},
+    {word: "Gummi", translation: "caoutchouc", article: "der"},
+    {word: "Papier", translation: "papier", article: "das"},
+    {word: "Karton", translation: "carton", article: "der"},
+    {word: "Stoff", translation: "tissu", article: "der"},
+
+    // Formes géométriques
+    {word: "Form", translation: "forme", article: "die"},
+    {word: "Kreis", translation: "cercle", article: "der"},
+    {word: "Quadrat", translation: "carré", article: "das"},
+    {word: "Rechteck", translation: "rectangle", article: "das"},
+    {word: "Dreieck", translation: "triangle", article: "das"},
+    {word: "Oval", translation: "ovale", article: "das"},
+    {word: "Linie", translation: "ligne", article: "die"},
+    {word: "Punkt", translation: "point", article: "der"},
+    {word: "Kante", translation: "arête", article: "die"},
+    {word: "Ecke", translation: "coin", article: "die"},
+
+    // Directions et orientations
+    {word: "Norden", translation: "nord", article: "der"},
+    {word: "Süden", translation: "sud", article: "der"},
+    {word: "Osten", translation: "est", article: "der"},
+    {word: "Westen", translation: "ouest", article: "der"},
+    {word: "Links", translation: "gauche", article: "die"},
+    {word: "Rechts", translation: "droite", article: "die"},
+    {word: "Mitte", translation: "milieu", article: "die"},
+    {word: "Seite", translation: "côté", article: "die"},
+    {word: "Rand", translation: "bord", article: "der"},
+    {word: "Zentrum", translation: "centre", article: "das"},
+
+    // Mesures et quantités
+    {word: "Meter", translation: "mètre", article: "der"},
+    {word: "Zentimeter", translation: "centimètre", article: "der"},
+    {word: "Kilometer", translation: "kilomètre", article: "der"},
+    {word: "Gramm", translation: "gramme", article: "das"},
+    {word: "Kilogramm", translation: "kilogramme", article: "das"},
+    {word: "Liter", translation: "litre", article: "der"},
+    {word: "Grad", translation: "degré", article: "der"},
+    {word: "Prozent", translation: "pourcent", article: "das"},
+    {word: "Hälfte", translation: "moitié", article: "die"},
+    {word: "Viertel", translation: "quart", article: "das"},
+    {word: "Drittel", translation: "tiers", article: "das"},
+
+    // Événements de la vie
+    {word: "Geburt", translation: "naissance", article: "die"},
+    {word: "Tod", translation: "mort", article: "der"},
+    {word: "Leben", translation: "vie", article: "das"},
+    {word: "Scheidung", translation: "divorce", article: "die"},
+    {word: "Geburtstag", translation: "anniversaire", article: "der"},
+    {word: "Feier", translation: "fête", article: "die"},
+    {word: "Party", translation: "fête", article: "die"},
+    {word: "Besuch", translation: "visite", article: "der"},
+    {word: "Treffen", translation: "rencontre", article: "das"},
+
+    // Phénomènes sociaux
+    {word: "Gesellschaft", translation: "société", article: "die"},
+    {word: "Kultur", translation: "culture", article: "die"},
+    {word: "Tradition", translation: "tradition", article: "die"},
+    {word: "Brauch", translation: "coutume", article: "der"},
+    {word: "Gewohnheit", translation: "habitude", article: "die"},
+    {word: "Sitte", translation: "mœurs", article: "die"},
+    {word: "Mode", translation: "mode", article: "die"},
+    {word: "Trend", translation: "tendance", article: "der"},
+    {word: "Problem", translation: "problème", article: "das"},
+    {word: "Lösung", translation: "solution", article: "die"},
+
+    // Concepts de communication
+    {word: "Gespräch", translation: "conversation", article: "das"},
+    {word: "Diskussion", translation: "discussion", article: "die"},
+    {word: "Streit", translation: "dispute", article: "der"},
+    {word: "Argument", translation: "argument", article: "das"},
+    {word: "Meinung", translation: "opinion", article: "die"},
+    {word: "Ansicht", translation: "point de vue", article: "die"},
+    {word: "Rat", translation: "conseil", article: "der"},
+    {word: "Tipp", translation: "conseil/astuce", article: "der"},
+    {word: "Vorschlag", translation: "proposition", article: "der"},
+    {word: "Idee", translation: "idée", article: "die"},
+
+    // Maladies et symptômes de base
+    {word: "Erkältung", translation: "rhume", article: "die"},
+    {word: "Grippe", translation: "grippe", article: "die"},
+    {word: "Allergie", translation: "allergie", article: "die"},
+    {word: "Verletzung", translation: "blessure", article: "die"},
+    {word: "Wunde", translation: "plaie", article: "die"},
+    {word: "Blutdruck", translation: "tension artérielle", article: "der"},
+    {word: "Puls", translation: "pouls", article: "der"},
+    {word: "Kreislauf", translation: "circulation", article: "der"},
+    {word: "Stress", translation: "stress", article: "der"},
+    {word: "Müdigkeit", translation: "fatigue", article: "die"},
+
+    // Concepts financiers de base
+    {word: "Preis", translation: "prix", article: "der"},
+    {word: "Ausgabe", translation: "dépense", article: "die"},
+    {word: "Einnahme", translation: "recette", article: "die"},
+    {word: "Rabatt", translation: "réduction", article: "der"},
+    {word: "Angebot", translation: "offre", article: "das"},
+    {word: "Rechnung", translation: "facture", article: "die"},
+    {word: "Quittung", translation: "reçu", article: "die"},
+    {word: "Steuer", translation: "impôt", article: "die"},
+    {word: "Versicherung", translation: "assurance", article: "die"},
+
+    // Concepts de logement
+    {word: "Wohnung", translation: "appartement", article: "die"},
+    {word: "Haus", translation: "maison", article: "das"},
+    {word: "Zimmer", translation: "chambre", article: "das"},
+    {word: "Möbel", translation: "meuble", article: "das"},
+    {word: "Tisch", translation: "table", article: "der"},
+    {word: "Stuhl", translation: "chaise", article: "der"},
+    {word: "Bett", translation: "lit", article: "das"},
+    {word: "Schrank", translation: "armoire", article: "der"},
+    {word: "Sofa", translation: "canapé", article: "das"},
+    {word: "Sessel", translation: "fauteuil", article: "der"},
+    {word: "Regal", translation: "étagère", article: "das"},
+    {word: "Spiegel", translation: "miroir", article: "der"},
+    {word: "Lampe", translation: "lampe", article: "die"},
+    {word: "Vorhang", translation: "rideau", article: "der"},
+    {word: "Teppich", translation: "tapis", article: "der"},
+
+    // Concepts météorologiques précis
+    {word: "Temperatur", translation: "température", article: "die"},
+    {word: "Gewitter", translation: "orage", article: "das"},
+    {word: "Donner", translation: "tonnerre", article: "der"},
+    {word: "Blitz", translation: "éclair", article: "der"},
+    {word: "Regenbogen", translation: "arc-en-ciel", article: "der"},
+    {word: "Jahreszeit", translation: "saison", article: "die"},
+    {word: "Frühling", translation: "printemps", article: "der"},
+    {word: "Sommer", translation: "été", article: "der"},
+    {word: "Herbst", translation: "automne", article: "der"},
+    {word: "Winter", translation: "hiver", article: "der"}
+];
+
+document.getElementById('title').textContent = `🇩🇪 Pratique des articles allemands, (${words.length} mots)`;
+
+let currentWordIndex = 0;
+let correctCount = 0;
+let incorrectCount = 0;
+let totalQuestions = 0;
+let masteredWords = new Set();
+
+// Système de répétition espacée
+let reviewQueue = []; // Mots à réviser avec leur délai
+let questionsSinceLastReview = 0;
+const REVIEW_INTERVAL = 5; // Révision après 5 questions
+
+let shuffledWords = shuffle([...words]);
+let currentWord = null;
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function addToReviewQueue(word) {
+    // Ajouter un mot à la file de révision avec un délai
+    const reviewItem = {
+        word: word,
+        questionsToWait: REVIEW_INTERVAL
+    };
+    reviewQueue.push(reviewItem);
+    updateStats();
+}
+
+function updateReviewQueue() {
+    // Décrémenter le délai de tous les mots en attente
+    reviewQueue.forEach(item => {
+        if (item.questionsToWait > 0) {
+            item.questionsToWait--;
+        }
+    });
+}
+
+function getNextWord() {
+    // Vérifier s'il y a des mots prêts à réviser
+    const readyToReview = reviewQueue.filter(item => item.questionsToWait <= 0);
+    
+    if (readyToReview.length > 0) {
+        // Prendre un mot à réviser
+        const reviewItem = readyToReview[0];
+        reviewQueue = reviewQueue.filter(item => item !== reviewItem);
+        questionsSinceLastReview = 0;
+        return { word: reviewItem.word, isReview: true };
+    }
+    
+    // Sinon, prendre le prochain mot de la séquence normale
+    if (currentWordIndex >= shuffledWords.length) {
+        // Recommencer avec les mots non maîtrisés
+        const unmastered = words.filter(w => !masteredWords.has(w.word));
+        if (unmastered.length === 0) {
+            // Tous les mots sont maîtrisés, recommencer
+            masteredWords.clear();
+            shuffledWords = shuffle([...words]);
+        } else {
+            shuffledWords = shuffle(unmastered);
+        }
+        currentWordIndex = 0;
+    }
+    
+    questionsSinceLastReview++;
+    return { word: shuffledWords[currentWordIndex++], isReview: false };
+}
+
+function displayWord() {
+    const wordData = getNextWord();
+    currentWord = wordData.word;
+    const isReview = wordData.isReview;
+    
+    document.getElementById('word').textContent = currentWord.word;
+    document.getElementById('translation').textContent = `(${currentWord.translation})`;
+    
+    // Indicateur de révision
+    const reviewIndicator = document.getElementById('review-indicator');
+    const questionCard = document.getElementById('question-card');
+    
+    if (isReview) {
+        reviewIndicator.style.display = 'block';
+        questionCard.classList.add('review');
+    } else {
+        reviewIndicator.style.display = 'none';
+        questionCard.classList.remove('review');
+    }
+    
+    document.getElementById('feedback').classList.remove('show');
+    document.getElementById('next-btn').classList.remove('show');
+    
+    // Enable buttons
+    document.querySelectorAll('.article-btn').forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    });
+    
+    updateStats();
+}
+
+function checkAnswer(selectedArticle) {
+    const feedback = document.getElementById('feedback');
+    const nextBtn = document.getElementById('next-btn');
+    
+    totalQuestions++;
+    updateReviewQueue(); // Mettre à jour les délais
+    
+    // Disable buttons
+    document.querySelectorAll('.article-btn').forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+    });
+    
+    if (selectedArticle === currentWord.article) {
+        correctCount++;
+        masteredWords.add(currentWord.word);
+        feedback.textContent = `✅ Correct ! ${currentWord.article} ${currentWord.word}`;
+        feedback.className = 'feedback correct show';
+    } else {
+        incorrectCount++;
+        masteredWords.delete(currentWord.word); // Retirer de la liste des maîtrisés
+        addToReviewQueue(currentWord); // Ajouter à la file de révision
+        feedback.textContent = `❌ Incorrect ! C'est "${currentWord.article} ${currentWord.word}" - Vous le reverrez bientôt !`;
+        feedback.className = 'feedback incorrect show';
+    }
+    
+    updateScore();
+    updateStats();
+    nextBtn.classList.add('show');
+}
+
+function nextQuestion() {
+    displayWord();
+}
+
+function updateScore() {
+    document.getElementById('correct').textContent = correctCount;
+    document.getElementById('incorrect').textContent = incorrectCount;
+    
+    const percentage = (correctCount / Math.max(totalQuestions, 1)) * 100;
+    document.getElementById('progress-bar').style.width = percentage + '%';
+}
+
+function updateStats() {
+    document.getElementById('to-review').textContent = reviewQueue.length;
+    document.getElementById('mastered').textContent = masteredWords.size;
+    
+    const readyToReview = reviewQueue.filter(item => item.questionsToWait <= 0).length;
+    const nextReviewIn = reviewQueue.length > 0 ? Math.min(...reviewQueue.map(item => item.questionsToWait)) : -1;
+    
+    if (readyToReview > 0) {
+        document.getElementById('questions-until-review').textContent = "Maintenant !";
+        document.getElementById('questions-until-review').style.color = "#d69e2e";
+    } else if (nextReviewIn >= 0) {
+        document.getElementById('questions-until-review').textContent = nextReviewIn;
+        document.getElementById('questions-until-review').style.color = "#4a5568";
+    } else {
+        document.getElementById('questions-until-review').textContent = "-";
+        document.getElementById('questions-until-review').style.color = "#4a5568";
+    }
+}
+
+// Initialize
+displayWord();
+updateScore();
+    </script>
+
+    <hr><a href="legal.html">legal notice</a><hr>
+</body>
+</html>

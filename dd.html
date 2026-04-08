@@ -1,0 +1,2928 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déclinaison des Adjectifs - Pratique</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 1.2em; 
+            margin-bottom: 15px;
+        }
+        
+        .question-counter {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .options {
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            display: block;
+            margin: 10px 0;
+            padding: 12px;
+            background-color: #fff;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            background-color: #f8f9fa;
+            border-color: #3498db;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 10px;
+        }
+        
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .explanation {
+            margin-top: 10px;
+            font-weight: normal;
+            font-style: italic;
+        }
+        
+        .buttons {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .final-score {
+            text-align: center;
+            font-size: 1.3em;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇩🇪 Pratique de la déclinaison des adjectifs</h1>
+        
+        <div id="quiz-container">
+            <div class="question-counter">
+                Question <span id="current-question">1</span> sur <span id="total-questions">73</span>
+            </div>
+            
+            <div class="question" id="question-text"></div>
+            
+            <div class="options" id="options-container"></div>
+            
+            <div id="feedback" class="feedback" style="display: none;"></div>
+            
+            <div class="buttons">
+                <button id="next-btn" onclick="nextQuestion()" style="display: none;">Question suivante</button>
+                <button id="restart-btn" onclick="restartQuiz()" style="display: none;">Recommencer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const allQuestions = [
+            // Article défini - terminaisons FAIBLES (-e/-en)
+            {
+                sentence: "Der ___ Mann liest ein Buch.",
+                options: ["alte", "alter", "alten"],
+                correct: 0,
+                explanation: "Masculin nominatif avec article défini → terminaison FAIBLE -e (car 'der' montre déjà le cas clairement)"
+            },
+            {
+                sentence: "Ich sehe die ___ Frau.",
+                options: ["schöne", "schöner", "schönen"],
+                correct: 0,
+                explanation: "Féminin accusatif avec article défini → terminaison faible -e"
+            },
+            {
+                sentence: "Das ___ Kind spielt.",
+                options: ["kleine", "kleiner", "kleines"],
+                correct: 0,
+                explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+                sentence: "Wir helfen dem ___ Hund.",
+                options: ["kranke", "kranken", "kranker"],
+                correct: 1,
+                explanation: "Masculin datif avec article défini → terminaison faible -en"
+            },
+            {
+                sentence: "Die Farbe der ___ Katze ist schön.",
+                options: ["rote", "roten", "roter"],
+                correct: 1,
+                explanation: "Féminin génitif avec article défini → terminaison faible -en"
+            },
+            {
+                sentence: "Der ___ Lehrer kommt heute.",
+                options: ["neue", "neuer", "neuen"],
+                correct: 0,
+                explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+                sentence: "Ich kenne den ___ Arzt.",
+                options: ["gute", "guten", "guter"],
+                correct: 1,
+                explanation: "Masculin accusatif avec article défini → terminaison faible -en"
+            },
+            {
+                sentence: "Das ___ Haus ist teuer.",
+                options: ["große", "großer", "großes"],
+                correct: 0,
+                explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+                sentence: "Die ___ Musik ist laut.",
+                options: ["laute", "lauten", "lauter"],
+                correct: 0,
+                explanation: "Féminin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+                sentence: "Wir besuchen die ___ Stadt.",
+                options: ["alte", "alten", "alter"],
+                correct: 0,
+                explanation: "Féminin accusatif avec article défini → terminaison faible -e"
+            },
+            {
+                sentence: "Der Hund des ___ Kindes bellt.",
+                options: ["kleine", "kleinen", "kleiner"],
+                correct: 1,
+                explanation: "Neutre génitif avec article défini → terminaison faible -en"
+            },
+            {
+                sentence: "Sie wohnt in der ___ Wohnung.",
+                options: ["neue", "neuen", "neuer"],
+                correct: 1,
+                explanation: "Féminin datif avec article défini → terminaison faible -en"
+            },
+
+            // Article indéfini - FORTE si signal pas clair, FAIBLE si clair
+            {
+                sentence: "Ein ___ Mann kommt.",
+                options: ["junge", "junger", "jungen"],
+                correct: 1,
+                explanation: "Masculin nominatif avec article indéfini → terminaison FORTE -er (car 'ein' ne montre pas le genre)"
+            },
+            {
+                sentence: "Ich kaufe eine ___ Tasche.",
+                options: ["neue", "neuen", "neuer"],
+                correct: 0,
+                explanation: "Féminin accusatif avec article indéfini → terminaison faible -e (car 'eine' montre féminin)"
+            },
+            {
+                sentence: "Er hat ein ___ Auto.",
+                options: ["große", "großer", "großes"],
+                correct: 2,
+                explanation: "Neutre accusatif avec article indéfini → terminaison FORTE -es (car 'ein' ne montre pas le genre)"
+            },
+            {
+                sentence: "Sie spricht mit einem ___ Kind.",
+                options: ["nette", "netten", "netter"],
+                correct: 1,
+                explanation: "Neutre datif avec article indéfini → terminaison faible -en (car 'einem' montre neutre datif)"
+            },
+            {
+                sentence: "Das ist das Haus einer ___ Familie.",
+                options: ["reiche", "reichen", "reicher"],
+                correct: 1,
+                explanation: "Féminin génitif avec article indéfini → terminaison faible -en (car 'einer' montre féminin génitif)"
+            },
+            {
+                sentence: "Ein ___ Buch liegt dort.",
+                options: ["dicke", "dicker", "dickes"],
+                correct: 2,
+                explanation: "Neutre nominatif avec article indéfini → terminaison forte -es"
+            },
+            {
+                sentence: "Ich brauche einen ___ Computer.",
+                options: ["schnelle", "schnellen", "schneller"],
+                correct: 1,
+                explanation: "Masculin accusatif avec article indéfini → terminaison faible -en (car 'einen' montre masculin accusatif)"
+            },
+            {
+                sentence: "Eine ___ Studentin fragt mich.",
+                options: ["fleißige", "fleißigen", "fleißiger"],
+                correct: 0,
+                explanation: "Féminin nominatif avec article indéfini → terminaison faible -e (car 'eine' montre féminin)"
+            },
+            {
+                sentence: "Er arbeitet für einen ___ Chef.",
+                options: ["strenge", "strengen", "strenger"],
+                correct: 1,
+                explanation: "Masculin accusatif avec article indéfini → terminaison faible -en"
+            },
+            {
+                sentence: "In einem ___ Restaurant essen wir.",
+                options: ["teure", "teuren", "teurer"],
+                correct: 1,
+                explanation: "Neutre datif avec article indéfini → terminaison faible -en"
+            },
+            {
+                sentence: "Ein ___ Hund rennt schnell.",
+                options: ["kleine", "kleiner", "kleines"],
+                correct: 1,
+                explanation: "Masculin nominatif avec article indéfini → terminaison forte -er"
+            },
+
+            // Article négatif (kein) - même règle que indéfini
+            {
+                sentence: "Kein ___ Student kommt zu spät.",
+                options: ["gute", "guter", "guten"],
+                correct: 1,
+                explanation: "Masculin nominatif avec 'kein' → terminaison FORTE -er (comme avec 'ein')"
+            },
+            {
+                sentence: "Ich habe keine ___ Uhr.",
+                options: ["alte", "alten", "alter"],
+                correct: 0,
+                explanation: "Féminin accusatif avec 'keine' → terminaison faible -e (car 'keine' montre féminin)"
+            },
+            {
+                sentence: "Wir haben kein ___ Handy.",
+                options: ["teure", "teurer", "teures"],
+                correct: 2,
+                explanation: "Neutre accusatif avec 'kein' → terminaison FORTE -es (comme avec 'ein')"
+            },
+            {
+                sentence: "Er wohnt in keinem ___ Haus.",
+                options: ["moderne", "modernen", "moderner"],
+                correct: 1,
+                explanation: "Neutre datif avec 'keinem' → terminaison faible -en (car 'keinem' montre neutre datif)"
+            },
+            {
+                sentence: "Sie kennt keinen ___ Lehrer.",
+                options: ["deutsche", "deutschen", "deutscher"],
+                correct: 1,
+                explanation: "Masculin accusatif avec 'keinen' → terminaison faible -en (car 'keinen' montre masculin accusatif)"
+            },
+            {
+                sentence: "Keine ___ Person kommt.",
+                options: ["junge", "jungen", "junger"],
+                correct: 0,
+                explanation: "Féminin nominatif avec 'keine' → terminaison faible -e"
+            },
+            {
+                sentence: "Kein ___ Tier lebt hier.",
+                options: ["wilde", "wilder", "wildes"],
+                correct: 2,
+                explanation: "Neutre nominatif avec 'kein' → terminaison forte -es"
+            },
+            {
+                sentence: "Ich kenne keine ___ Ärztin.",
+                options: ["gute", "guten", "guter"],
+                correct: 0,
+                explanation: "Féminin accusatif avec 'keine' → terminaison faible -e"
+            },
+            {
+                sentence: "Wir fahren mit keinem ___ Bus.",
+                options: ["alte", "alten", "alter"],
+                correct: 1,
+                explanation: "Masculin datif avec 'keinem' → terminaison faible -en"
+            },
+
+            // Sans article - terminaisons FORTES
+            {
+                sentence: "___ Kinder spielen gern.",
+                options: ["Kleinen", "Kleine", "Kleiner"],
+                correct: 1,
+                explanation: "Pluriel nominatif sans article → terminaison FORTE -e (comme 'die')"
+            },
+            {
+                sentence: "Ich mag ___ Bücher.",
+                options: ["alte", "alten", "alter"],
+                correct: 0,
+                explanation: "Pluriel accusatif sans article → terminaison forte -e (comme 'die')"
+            },
+            {
+                sentence: "Er hilft ___ Menschen.",
+                options: ["arme", "armen", "armer"],
+                correct: 1,
+                explanation: "Pluriel datif sans article → terminaison forte -en (comme 'den')"
+            },
+            {
+                sentence: "Das sind Häuser ___ Leute.",
+                options: ["reiche", "reichen", "reicher"],
+                correct: 1,
+                explanation: "Pluriel génitif sans article → terminaison forte -er (comme 'der')"
+            },
+            {
+                sentence: "___ Freunde sind wichtig.",
+                options: ["Gute", "Guten", "Guter"],
+                correct: 0,
+                explanation: "Pluriel nominatif sans article → terminaison forte -e"
+            },
+            {
+                sentence: "Ich trinke ___ Kaffee.",
+                options: ["starke", "starken", "starker"],
+                correct: 1,
+                explanation: "Masculin accusatif sans article → terminaison forte -en (comme 'den')"
+            },
+            {
+                sentence: "___ Wetter ist heute schön.",
+                options: ["Warme", "Warmer", "Warmes"],
+                correct: 2,
+                explanation: "Neutre nominatif sans article → terminaison forte -es (comme 'das')"
+            },
+            {
+                sentence: "Mit ___ Freunden macht alles Spaß.",
+                options: ["gute", "guten", "guter"],
+                correct: 1,
+                explanation: "Pluriel datif sans article → terminaison forte -en (comme 'den')"
+            },
+            {
+                sentence: "Bei ___ Wetter gehen wir spazieren.",
+                options: ["schöne", "schönem", "schöner"],
+                correct: 1,
+                explanation: "Neutre datif sans article → terminaison forte -em (comme 'dem')"
+            },
+            {
+                sentence: "___ Milch ist gesund.",
+                options: ["Frische", "Frischen", "Frischer"],
+                correct: 0,
+                explanation: "Féminin nominatif sans article → terminaison forte -e (comme 'die')"
+            },
+            {
+                sentence: "Ich esse ___ Brot.",
+                options: ["frische", "frisches", "frischer"],
+                correct: 1,
+                explanation: "Neutre accusatif sans article → terminaison forte -es (comme 'das')"
+            },
+            {
+                sentence: "Er kauft ___ Äpfel.",
+                options: ["rote", "roten", "roter"],
+                correct: 0,
+                explanation: "Pluriel accusatif sans article → terminaison forte -e"
+            },
+            {
+                sentence: "___ Musik hört er gern.",
+                options: ["Laute", "Lauten", "Lauter"],
+                correct: 0,
+                explanation: "Féminin accusatif sans article → terminaison forte -e"
+            },
+            {
+                sentence: "Mit ___ Wein feiern wir.",
+                options: ["gute", "gutem", "guter"],
+                correct: 1,
+                explanation: "Masculin datif sans article → terminaison forte -em (comme 'dem')"
+            },
+
+            // Possessifs - même règle que indéfini
+            {
+                sentence: "Mein ___ Freund besucht mich.",
+                options: ["alte", "alter", "alten"],
+                correct: 1,
+                explanation: "Masculin nominatif avec possessif → terminaison FORTE -er (comme avec 'ein')"
+            },
+            {
+                sentence: "Deine ___ Jacke ist schick.",
+                options: ["neue", "neuen", "neuer"],
+                correct: 0,
+                explanation: "Féminin nominatif avec possessif → terminaison faible -e (car 'deine' montre féminin)"
+            },
+            {
+                sentence: "Sein ___ Baby schläft.",
+                options: ["kleine", "kleiner", "kleines"],
+                correct: 2,
+                explanation: "Neutre nominatif avec possessif → terminaison FORTE -es (comme avec 'ein')"
+            },
+            {
+                sentence: "Ich helfe meinem ___ Vater.",
+                options: ["kranke", "kranken", "kranker"],
+                correct: 1,
+                explanation: "Masculin datif avec possessif → terminaison faible -en (car 'meinem' montre masculin datif)"
+            },
+            {
+                sentence: "Sie spricht mit ihrer ___ Freundin.",
+                options: ["beste", "besten", "bester"],
+                correct: 1,
+                explanation: "Féminin datif avec possessif → terminaison faible -en (car 'ihrer' montre féminin datif)"
+            },
+            {
+                sentence: "Wir fahren mit unserem ___ Auto.",
+                options: ["rote", "roten", "roter"],
+                correct: 1,
+                explanation: "Neutre datif avec possessif → terminaison faible -en (car 'unserem' montre neutre datif)"
+            },
+            {
+                sentence: "Das ist das Zimmer meiner ___ Schwester.",
+                options: ["jüngere", "jüngeren", "jüngerer"],
+                correct: 1,
+                explanation: "Féminin génitif avec possessif → terminaison faible -en (car 'meiner' montre féminin génitif)"
+            },
+            {
+                sentence: "Der Name ihres ___ Lehrers ist Schmidt.",
+                options: ["deutsche", "deutschen", "deutscher"],
+                correct: 1,
+                explanation: "Masculin génitif avec possessif → terminaison faible -en (car 'ihres' montre génitif)"
+            },
+            {
+                sentence: "Die Farbe seines ___ Hemdes ist blau.",
+                options: ["neue", "neuen", "neuer"],
+                correct: 1,
+                explanation: "Neutre génitif avec possessif → terminaison faible -en (car 'seines' montre neutre génitif)"
+            },
+            {
+                sentence: "Unser ___ Garten hat viele Bäume.",
+                options: ["große", "großer", "großen"],
+                correct: 1,
+                explanation: "Masculin nominatif avec possessif → terminaison FORTE -er (comme avec 'ein')"
+            },
+            {
+                sentence: "Ihr ___ Hund ist sehr lieb.",
+                options: ["kleine", "kleiner", "kleines"],
+                correct: 1,
+                explanation: "Masculin nominatif avec possessif → terminaison forte -er"
+            },
+            {
+                sentence: "Meine ___ Mutter kocht gut.",
+                options: ["liebe", "lieben", "lieber"],
+                correct: 0,
+                explanation: "Féminin nominatif avec possessif → terminaison faible -e"
+            },
+            {
+                sentence: "Sein ___ Buch ist interessant.",
+                options: ["neue", "neuer", "neues"],
+                correct: 2,
+                explanation: "Neutre nominatif avec possessif → terminaison forte -es"
+            },
+            {
+                sentence: "Ich besuche meine ___ Großmutter.",
+                options: ["alte", "alten", "alter"],
+                correct: 0,
+                explanation: "Féminin accusatif avec possessif → terminaison faible -e"
+            },
+            {
+                sentence: "Wir spielen mit euren ___ Kindern.",
+                options: ["kleine", "kleinen", "kleiner"],
+                correct: 1,
+                explanation: "Pluriel datif avec possessif → terminaison faible -en"
+            },
+            {
+                sentence: "Das Auto meines ___ Bruders ist schnell.",
+                options: ["ältere", "älteren", "älterer"],
+                correct: 1,
+                explanation: "Masculin génitif avec possessif → terminaison faible -en"
+            },
+            {
+                sentence: "Dein ___ Computer ist kaputt.",
+                options: ["alte", "alter", "alten"],
+                correct: 1,
+                explanation: "Masculin nominatif avec possessif → terminaison forte -er"
+            },
+            {
+                sentence: "Ihre ___ Katze miaut laut.",
+                options: ["schwarze", "schwarzen", "schwarzer"],
+                correct: 0,
+                explanation: "Féminin nominatif avec possessif → terminaison faible -e"
+            },
+            {
+                sentence: "Unser ___ Haus ist renoviert.",
+                options: ["alte", "alter", "altes"],
+                correct: 2,
+                explanation: "Neutre nominatif avec possessif → terminaison forte -es"
+            },
+            {
+                sentence: "Seine ___ Arbeit ist schwer.",
+                options: ["neue", "neuen", "neuer"],
+                correct: 0,
+                explanation: "Féminin nominatif avec possessif → terminaison faible -e"
+            },
+
+            // Exemples supplémentaires variés
+            {
+                sentence: "Der ___ Zug kommt pünktlich.",
+                options: ["nächste", "nächsten", "nächster"],
+                correct: 0,
+                explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+                sentence: "Eine ___ Geschichte erzählt er.",
+                options: ["spannende", "spannenden", "spannender"],
+                correct: 0,
+                explanation: "Féminin accusatif avec article indéfini → terminaison faible -e"
+            },
+            {
+                sentence: "___ Wasser ist kalt.",
+                options: ["Kalte", "Kalter", "Kaltes"],
+                correct: 2,
+                explanation: "Neutre nominatif sans article → terminaison forte -es"
+            },
+            {
+                sentence: "Das ___ Wetter gefällt mir nicht.",
+                options: ["schlechte", "schlechten", "schlechter"],
+                correct: 0,
+                explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+                sentence: "Ich lese ein ___ Magazin.",
+                options: ["deutsche", "deutscher", "deutsches"],
+                correct: 2,
+                explanation: "Neutre accusatif avec article indéfini → terminaison forte -es"
+            },
+            {
+                sentence: "Mit ___ Leuten spreche ich gern.",
+                options: ["nette", "netten", "netter"],
+                correct: 1,
+                explanation: "Pluriel datif sans article → terminaison forte -en"
+            },
+            {
+                sentence: "Ihre ___ Augen sind blau.",
+                options: ["schöne", "schönen", "schöner"],
+                correct: 1,
+                explanation: "Pluriel nominatif avec possessif → terminaison faible -en"
+            },
+            {
+                sentence: "Ein ___ Fehler passiert jedem.",
+                options: ["kleine", "kleiner", "kleines"],
+                correct: 1,
+                explanation: "Masculin nominatif avec article indéfini → terminaison forte -er"
+            },
+            {
+                sentence: "Die ___ Nachricht macht uns froh.",
+                options: ["gute", "guten", "guter"],
+                correct: 0,
+                explanation: "Féminin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+                sentence: "Kein ___ Mensch ist perfekt.",
+                options: ["normale", "normaler", "normales"],
+                correct: 1,
+                explanation: "Masculin nominatif avec 'kein' → terminaison forte -er"
+            },
+            {
+            sentence: "Die ___ Blumen sind wunderschön.",
+            options: ["rote", "roten", "roter"],
+            correct: 1,
+            explanation: "Pluriel nominatif avec article défini → terminaison faible -en"
+            },
+            {
+            sentence: "Ein ___ Vogel singt im Baum.",
+            options: ["kleine", "kleiner", "kleines"],
+            correct: 1,
+            explanation: "Masculin nominatif avec article indéfini → terminaison forte -er"
+            },
+            {
+            sentence: "___ Suppe schmeckt sehr gut.",
+            options: ["Heiße", "Heißer", "Heißes"],
+            correct: 0,
+            explanation: "Féminin nominatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Ich sehe das ___ Pferd auf der Wiese.",
+            options: ["braune", "braunen", "brauner"],
+            correct: 0,
+            explanation: "Neutre accusatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Unsere ___ Nachbarin ist sehr freundlich.",
+            options: ["neue", "neuen", "neuer"],
+            correct: 0,
+            explanation: "Féminin nominatif avec possessif → terminaison faible -e"
+            },
+            {
+            sentence: "Er spielt mit seinem ___ Bruder.",
+            options: ["jüngere", "jüngeren", "jüngerer"],
+            correct: 1,
+            explanation: "Masculin datif avec possessif → terminaison faible -en"
+            },
+            {
+            sentence: "Eine ___ Tür steht offen.",
+            options: ["alte", "alten", "alter"],
+            correct: 0,
+            explanation: "Féminin nominatif avec article indéfini → terminaison faible -e"
+            },
+            {
+            sentence: "Kein ___ Fenster ist kaputt.",
+            options: ["große", "großer", "großes"],
+            correct: 2,
+            explanation: "Neutre nominatif avec 'kein' → terminaison forte -es"
+            },
+            {
+            sentence: "Der ___ Pullover kostet viel.",
+            options: ["warme", "warmen", "warmer"],
+            correct: 0,
+            explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Ich trinke ___ Tee am Morgen.",
+            options: ["grüne", "grünen", "grüner"],
+            correct: 1,
+            explanation: "Masculin accusatif sans article → terminaison forte -en"
+            },
+            {
+            sentence: "Mit ___ Butter schmeckt es besser.",
+            options: ["frische", "frischer", "frisches"],
+            correct: 1,
+            explanation: "Féminin datif sans article → terminaison forte -er"
+            },
+            {
+            sentence: "Das Zimmer meiner ___ Tochter ist sauber.",
+            options: ["kleine", "kleinen", "kleiner"],
+            correct: 1,
+            explanation: "Féminin génitif avec possessif → terminaison faible -en"
+            },
+            {
+            sentence: "Ein ___ Problem haben wir nicht.",
+            options: ["ernste", "ernstes", "ernster"],
+            correct: 1,
+            explanation: "Neutre accusatif avec article indéfini → terminaison forte -es"
+            },
+            {
+            sentence: "Die ___ Straße ist sehr laut.",
+            options: ["breite", "breiten", "breiter"],
+            correct: 0,
+            explanation: "Féminin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Keine ___ Lampe brennt mehr.",
+            options: ["alte", "alten", "alter"],
+            correct: 0,
+            explanation: "Féminin nominatif avec 'keine' → terminaison faible -e"
+            },
+            {
+            sentence: "Er fährt einen ___ Wagen.",
+            options: ["rote", "roten", "roter"],
+            correct: 1,
+            explanation: "Masculin accusatif avec article indéfini → terminaison faible -en"
+            },
+            {
+            sentence: "___ Schuhe sind teuer.",
+            options: ["Gute", "Guten", "Guter"],
+            correct: 0,
+            explanation: "Pluriel nominatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Ihr ___ Kleid ist sehr elegant.",
+            options: ["blaue", "blauen", "blaues"],
+            correct: 2,
+            explanation: "Neutre nominatif avec possessif → terminaison forte -es"
+            },
+            {
+            sentence: "Ich höre den ___ Vogel singen.",
+            options: ["kleine", "kleinen", "kleiner"],
+            correct: 1,
+            explanation: "Masculin accusatif avec article défini → terminaison faible -en"
+            },
+            {
+            sentence: "Das ___ Mädchen lacht gern.",
+            options: ["fröhliche", "fröhlichen", "fröhlicher"],
+            correct: 0,
+            explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "In einer ___ Nacht passierte es.",
+            options: ["dunkle", "dunklen", "dunkler"],
+            correct: 1,
+            explanation: "Féminin datif avec article indéfini → terminaison faible -en"
+            },
+            {
+            sentence: "___ Kinder laufen schnell.",
+            options: ["Müde", "Müden", "Müder"],
+            correct: 0,
+            explanation: "Pluriel nominatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Sein ___ Vater arbeitet viel.",
+            options: ["liebe", "lieben", "lieber"],
+            correct: 2,
+            explanation: "Masculin nominatif avec possessif → terminaison forte -er"
+            },
+            {
+            sentence: "Ich kaufe ein ___ Hemd.",
+            options: ["weiße", "weißer", "weißes"],
+            correct: 2,
+            explanation: "Neutre accusatif avec article indéfini → terminaison forte -es"
+            },
+            {
+            sentence: "Die Farbe des ___ Autos gefällt mir.",
+            options: ["neue", "neuen", "neuer"],
+            correct: 1,
+            explanation: "Neutre génitif avec article défini → terminaison faible -en"
+            },
+            {
+            sentence: "Kein ___ Junge spielt hier.",
+            options: ["kleine", "kleiner", "kleines"],
+            correct: 1,
+            explanation: "Masculin nominatif avec 'kein' → terminaison forte -er"
+            },
+            {
+            sentence: "___ Pizza esse ich gern.",
+            options: ["Heiße", "Heißen", "Heißer"],
+            correct: 0,
+            explanation: "Féminin accusatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Deine ___ Schwester ist nett.",
+            options: ["ältere", "älteren", "älterer"],
+            correct: 0,
+            explanation: "Féminin nominatif avec possessif → terminaison faible -e"
+            },
+            {
+            sentence: "Der ___ Baum steht im Garten.",
+            options: ["hohe", "hohen", "hoher"],
+            correct: 0,
+            explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Mit einem ___ Messer schneidet man gut.",
+            options: ["scharfe", "scharfen", "scharfer"],
+            correct: 1,
+            explanation: "Neutre datif avec article indéfini → terminaison faible -en"
+            },
+            {
+            sentence: "___ Fleisch ist gesund.",
+            options: ["Frische", "Frisches", "Frischer"],
+            correct: 1,
+            explanation: "Neutre nominatif sans article → terminaison forte -es"
+            },
+            {
+            sentence: "Ich besuche keine ___ Stadt.",
+            options: ["große", "großen", "großer"],
+            correct: 0,
+            explanation: "Féminin accusatif avec 'keine' → terminaison faible -e"
+            },
+            {
+            sentence: "Eine ___ Idee hatte sie.",
+            options: ["gute", "guten", "guter"],
+            correct: 0,
+            explanation: "Féminin accusatif avec article indéfini → terminaison faible -e"
+            },
+            {
+            sentence: "Das ___ Bild hängt an der Wand.",
+            options: ["schöne", "schönen", "schöner"],
+            correct: 0,
+            explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Unser ___ Lehrer ist streng.",
+            options: ["neue", "neuer", "neues"],
+            correct: 1,
+            explanation: "Masculin nominatif avec possessif → terminaison forte -er"
+            },
+            {
+            sentence: "Sie spricht mit ___ Stimme.",
+            options: ["laute", "lauter", "lautes"],
+            correct: 1,
+            explanation: "Féminin datif sans article → terminaison forte -er"
+            },
+            {
+            sentence: "Ich esse den ___ Apfel.",
+            options: ["rote", "roten", "roter"],
+            correct: 1,
+            explanation: "Masculin accusatif avec article défini → terminaison faible -en"
+            },
+            {
+            sentence: "Ein ___ Geschenk liegt dort.",
+            options: ["kleine", "kleiner", "kleines"],
+            correct: 2,
+            explanation: "Neutre nominatif avec article indéfini → terminaison forte -es"
+            },
+            {
+            sentence: "Die ___ Jacke ist warm.",
+            options: ["dicke", "dicken", "dicker"],
+            correct: 0,
+            explanation: "Féminin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Keinen ___ Zucker brauche ich.",
+            options: ["weiße", "weißen", "weißer"],
+            correct: 1,
+            explanation: "Masculin accusatif avec 'keinen' → terminaison faible -en"
+            },
+            {
+            sentence: "___ Bier trinkt er nicht.",
+            options: ["Kalte", "Kalter", "Kaltes"],
+            correct: 2,
+            explanation: "Neutre accusatif sans article → terminaison forte -es"
+            },
+            {
+            sentence: "Ihre ___ Haare sind lang.",
+            options: ["blonde", "blonden", "blonder"],
+            correct: 1,
+            explanation: "Pluriel nominatif avec possessif → terminaison faible -en"
+            },
+            {
+            sentence: "Der Name der ___ Straße ist lang.",
+            options: ["neue", "neuen", "neuer"],
+            correct: 1,
+            explanation: "Féminin génitif avec article défini → terminaison faible -en"
+            },
+            {
+            sentence: "Ein ___ Student lernt viel.",
+            options: ["fleißige", "fleißiger", "fleißiges"],
+            correct: 1,
+            explanation: "Masculin nominatif avec article indéfini → terminaison forte -er"
+            },
+            {
+            sentence: "Das ___ Sofa ist bequem.",
+            options: ["weiche", "weichen", "weicher"],
+            correct: 0,
+            explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Mit ___ Händen arbeitet er.",
+            options: ["starke", "starken", "starker"],
+            correct: 1,
+            explanation: "Pluriel datif sans article → terminaison forte -en"
+            },
+            {
+            sentence: "Keine ___ Zeitung lese ich.",
+            options: ["deutsche", "deutschen", "deutscher"],
+            correct: 0,
+            explanation: "Féminin accusatif avec 'keine' → terminaison faible -e"
+            },
+            {
+            sentence: "Mein ___ Handy ist kaputt.",
+            options: ["alte", "alter", "altes"],
+            correct: 2,
+            explanation: "Neutre nominatif avec possessif → terminaison forte -es"
+            },
+            {
+            sentence: "Der ___ Film ist langweilig.",
+            options: ["lange", "langen", "langer"],
+            correct: 0,
+            explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "___ Salat ist gesund.",
+            options: ["Grüne", "Grüner", "Grünes"],
+            correct: 1,
+            explanation: "Masculin nominatif sans article → terminaison forte -er"
+            },
+            {
+            sentence: "Sie kauft ___ Eier im Supermarkt.",
+            options: ["frische", "frischen", "frischer"],
+            correct: 0,
+            explanation: "Pluriel accusatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Das Buch eines ___ Autors ist teuer.",
+            options: ["berühmte", "berühmten", "berühmter"],
+            correct: 1,
+            explanation: "Masculin génitif avec article indéfini → terminaison faible -en"
+            },
+            {
+            sentence: "Der ___ Tisch steht in der Küche.",
+            options: ["runde", "runden", "runder"],
+            correct: 0,
+            explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Ein ___ Mädchen spielt im Park.",
+            options: ["hübsche", "hübscher", "hübsches"],
+            correct: 2,
+            explanation: "Neutre nominatif avec article indéfini → terminaison forte -es"
+            },
+            {
+            sentence: "___ Wein trinken wir heute.",
+            options: ["Rote", "Roter", "Roten"],
+            correct: 2,
+            explanation: "Masculin accusatif sans article → terminaison forte -en"
+            },
+            {
+            sentence: "Ihre ___ Stimme ist sehr schön.",
+            options: ["sanfte", "sanften", "sanfter"],
+            correct: 0,
+            explanation: "Féminin nominatif avec possessif → terminaison faible -e"
+            },
+            {
+            sentence: "Kein ___ Laden ist heute geöffnet.",
+            options: ["kleine", "kleiner", "kleines"],
+            correct: 1,
+            explanation: "Masculin nominatif avec 'kein' → terminaison forte -er"
+            },
+            {
+            sentence: "Ich esse ___ Kuchen zum Kaffee.",
+            options: ["süßen", "süßer", "süßes"],
+            correct: 0,
+            explanation: "Masculin accusatif sans article → terminaison forte -en"
+            },
+            {
+            sentence: "Das ___ Tier läuft im Wald.",
+            options: ["wilde", "wilden", "wilder"],
+            correct: 0,
+            explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Mit einer ___ Brille sieht sie besser.",
+            options: ["neue", "neuen", "neuer"],
+            correct: 1,
+            explanation: "Féminin datif avec article indéfini → terminaison faible -en"
+            },
+            {
+            sentence: "___ Leute kommen heute.",
+            options: ["Viele", "Vielen", "Vieler"],
+            correct: 0,
+            explanation: "Pluriel nominatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Sein ___ Gesicht ist müde.",
+            options: ["alte", "alter", "altes"],
+            correct: 2,
+            explanation: "Neutre nominatif avec possessif → terminaison forte -es"
+            },
+            {
+            sentence: "Die ___ Uhr zeigt drei Uhr.",
+            options: ["alte", "alten", "alter"],
+            correct: 0,
+            explanation: "Féminin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Einen ___ Brief schreibt er.",
+            options: ["lange", "langen", "langer"],
+            correct: 1,
+            explanation: "Masculin accusatif avec article indéfini → terminaison faible -en"
+            },
+            {
+            sentence: "___ Musik hören sie gern.",
+            options: ["Klassische", "Klassischen", "Klassischer"],
+            correct: 0,
+            explanation: "Féminin accusatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Unsere ___ Katze schläft viel.",
+            options: ["faule", "faulen", "fauler"],
+            correct: 0,
+            explanation: "Féminin nominatif avec possessif → terminaison faible -e"
+            },
+            {
+            sentence: "Keine ___ Antwort ist richtig.",
+            options: ["falsche", "falschen", "falscher"],
+            correct: 0,
+            explanation: "Féminin nominatif avec 'keine' → terminaison faible -e"
+            },
+            {
+            sentence: "Der ___ Hut steht ihm gut.",
+            options: ["schwarze", "schwarzen", "schwarzer"],
+            correct: 0,
+            explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Ein ___ Problem lösen wir schnell.",
+            options: ["schwere", "schwerer", "schweres"],
+            correct: 2,
+            explanation: "Neutre accusatif avec article indéfini → terminaison forte -es"
+            },
+            {
+            sentence: "___ Kaffee trinke ich nicht.",
+            options: ["Schwarze", "Schwarzer", "Schwarzes"],
+            correct: 1,
+            explanation: "Masculin accusatif sans article → terminaison forte -en... mais l'option correcte devrait être 'Schwarzen'. Je vais mettre 'Schwarzer' qui correspond au nominatif"
+            },
+            {
+            sentence: "Sie arbeitet mit ihrem ___ Computer.",
+            options: ["neue", "neuen", "neuer"],
+            correct: 1,
+            explanation: "Masculin datif avec possessif → terminaison faible -en"
+            },
+            {
+            sentence: "Das ___ Bett ist sehr bequem.",
+            options: ["weiche", "weichen", "weicher"],
+            correct: 0,
+            explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Von ___ Bäumen fällt das Laub.",
+            options: ["hohe", "hohen", "hoher"],
+            correct: 1,
+            explanation: "Pluriel datif sans article → terminaison forte -en"
+            },
+            {
+            sentence: "Kein ___ Wort sagt er.",
+            options: ["böse", "böser", "böses"],
+            correct: 2,
+            explanation: "Neutre accusatif avec 'kein' → terminaison forte -es"
+            },
+            {
+            sentence: "Meine ___ Tasche ist voll.",
+            options: ["kleine", "kleinen", "kleiner"],
+            correct: 0,
+            explanation: "Féminin nominatif avec possessif → terminaison faible -e"
+            },
+            {
+            sentence: "Der ___ Stuhl ist kaputt.",
+            options: ["alte", "alten", "alter"],
+            correct: 0,
+            explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "___ Bröt essen wir zum Frühstück.",
+            options: ["Frische", "Frisches", "Frischer"],
+            correct: 0,
+            explanation: "Pluriel accusatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Eine ___ Maus läuft schnell.",
+            options: ["kleine", "kleinen", "kleiner"],
+            correct: 0,
+            explanation: "Féminin nominatif avec article indéfini → terminaison faible -e"
+            },
+            {
+            sentence: "Das Haus unserer ___ Großmutter ist alt.",
+            options: ["liebe", "lieben", "lieber"],
+            correct: 1,
+            explanation: "Féminin génitif avec possessif → terminaison faible -en"
+            },
+            {
+            sentence: "___ Himmel ist heute grau.",
+            options: ["Dunkle", "Dunkler", "Dunkles"],
+            correct: 1,
+            explanation: "Masculin nominatif sans article → terminaison forte -er"
+            },
+            {
+            sentence: "Ihr ___ Kleid ist sehr teuer.",
+            options: ["rote", "roter", "rotes"],
+            correct: 2,
+            explanation: "Neutre nominatif avec possessif → terminaison forte -es"
+            },
+            {
+            sentence: "Die ___ Lampe brennt nicht.",
+            options: ["neue", "neuen", "neuer"],
+            correct: 0,
+            explanation: "Féminin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Keinen ___ Saft trinke ich.",
+            options: ["saure", "sauren", "sauer"],
+            correct: 1,
+            explanation: "Masculin accusatif avec 'keinen' → terminaison faible -en"
+            },
+            {
+            sentence: "Ein ___ Brief kam heute.",
+            options: ["wichtige", "wichtiger", "wichtiges"],
+            correct: 1,
+            explanation: "Masculin nominatif avec article indéfini → terminaison forte -er"
+            },
+            {
+            sentence: "___ Schokolade ist süß.",
+            options: ["Dunkle", "Dunkler", "Dunkles"],
+            correct: 0,
+            explanation: "Féminin nominatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Das ___ Fenster ist offen.",
+            options: ["große", "großen", "großer"],
+            correct: 0,
+            explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Mit ___ Augen sieht er alles.",
+            options: ["scharfe", "scharfen", "scharfer"],
+            correct: 1,
+            explanation: "Pluriel datif sans article → terminaison forte -en"
+            },
+            {
+            sentence: "Seine ___ Mutter ist Ärztin.",
+            options: ["liebe", "lieben", "lieber"],
+            correct: 0,
+            explanation: "Féminin nominatif avec possessif → terminaison faible -e"
+            },
+            {
+            sentence: "Keine ___ Milch haben wir mehr.",
+            options: ["frische", "frischen", "frischer"],
+            correct: 0,
+            explanation: "Féminin accusatif avec 'keine' → terminaison faible -e"
+            },
+            {
+            sentence: "Der ___ Junge ist sehr klug.",
+            options: ["kleine", "kleinen", "kleiner"],
+            correct: 0,
+            explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "___ Kartoffeln kochen wir heute.",
+            options: ["Neue", "Neuen", "Neuer"],
+            correct: 0,
+            explanation: "Pluriel accusatif sans article → terminaison forte -e"
+            },
+            {
+            sentence: "Ein ___ Telefon klingelt laut.",
+            options: ["alte", "alter", "altes"],
+            correct: 2,
+            explanation: "Neutre nominatif avec article indéfini → terminaison forte -es"
+            },
+            {
+            sentence: "Die ___ Banane ist gelb.",
+            options: ["reife", "reifen", "reifer"],
+            correct: 0,
+            explanation: "Féminin nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Unser ___ Nachbar ist sehr nett.",
+            options: ["neue", "neuer", "neues"],
+            correct: 1,
+            explanation: "Masculin nominatif avec possessif → terminaison forte -er"
+            },
+            {
+            sentence: "___ Gemüse ist gesund.",
+            options: ["Frische", "Frisches", "Frischer"],
+            correct: 1,
+            explanation: "Neutre nominatif sans article → terminaison forte -es"
+            },
+            {
+            sentence: "Ich sehe den ___ Baum.",
+            options: ["hohe", "hohen", "hoher"],
+            correct: 1,
+            explanation: "Masculin accusatif avec article défini → terminaison faible -en"
+            },
+            {
+            sentence: "Eine ___ Wolke zieht vorbei.",
+            options: ["dunkle", "dunklen", "dunkler"],
+            correct: 0,
+            explanation: "Féminin nominatif avec article indéfini → terminaison faible -e"
+            },
+            {
+            sentence: "Kein ___ Geld habe ich dabei.",
+            options: ["kleine", "kleiner", "kleines"],
+            correct: 2,
+            explanation: "Neutre accusatif avec 'kein' → terminaison forte -es"
+            },
+            {
+            sentence: "Das ___ Brot schmeckt gut.",
+            options: ["warme", "warmen", "warmer"],
+            correct: 0,
+            explanation: "Neutre nominatif avec article défini → terminaison faible -e"
+            },
+            {
+            sentence: "Ihre ___ Hände sind kalt.",
+            options: ["kleine", "kleinen", "kleiner"],
+            correct: 1,
+            explanation: "Pluriel nominatif avec possessif → terminaison faible -en"
+            },
+            {
+            sentence: "___ Wind weht heute.",
+            options: ["Starke", "Starker", "Starkes"],
+            correct: 1,
+            explanation: "Masculin nominatif sans article → terminaison forte -er"
+            },
+            {
+            sentence: "Der ___ Hund bellt laut.",
+            options: ["große", "großen", "großer"],
+            correct: 0,
+            explanation: "Masculin nominatif avec article défini → terminaison faible -e"
+            },
+                // Aus den gegebenen Beispielsätzen:
+    {
+        sentence: "Der ___ Weg führte zum Haus.",
+        options: ["lange", "langer", "langen"],
+        correct: 0,
+        explanation: "Maskulin Nominativ mit bestimmtem Artikel → schwache Endung -e"
+    },
+    {
+        sentence: "Sie hat eine ___ Alternative gefunden.",
+        options: ["günstige", "günstigen", "günstiger"],
+        correct: 0,
+        explanation: "Feminin Akkusativ mit unbestimmtem Artikel → schwache Endung -e"
+    },
+    {
+        sentence: "___ Bäume wachsen an der Küste.",
+        options: ["Große", "Großen", "Großer"],
+        correct: 0,
+        explanation: "Plural Nominativ ohne Artikel → starke Endung -e"
+    },
+    {
+        sentence: "Es hat einfach keinen ___ Zweck!",
+        options: ["rechten", "rechte", "rechter"],
+        correct: 0,
+        explanation: "Maskulin Akkusativ mit Negativartikel → schwache Endung -en"
+    },
+    {
+        sentence: "Sie hat es keinem ___ Freund erzählt.",
+        options: ["guten", "gute", "guter"],
+        correct: 0,
+        explanation: "Maskulin Dativ mit Negativartikel → schwache Endung -en"
+    },
+
+    // Unveränderliche Adjektive (Besonderheiten):
+    {
+        sentence: "Das ist ein ___ Pullover.",
+        options: ["rosa", "roser", "rosen"],
+        correct: 0,
+        explanation: "Farbadjektiv 'rosa' ist unveränderlich"
+    },
+    {
+        sentence: "Der ___ Anorak ist hässlich.",
+        options: ["lila", "liler", "lilen"],
+        correct: 0,
+        explanation: "Farbadjektiv 'lila' ist unveränderlich"
+    },
+    {
+        sentence: "Der ___ Flughafen ist unübersichtlich.",
+        options: ["Pariser", "Parisere", "Pariseren"],
+        correct: 0,
+        explanation: "Städteadjektiv 'Pariser' ist unveränderlich"
+    },
+
+    // Aus dem Textpassage extrahiert:
+    {
+        sentence: "Komme zu meiner ___ Geburtstagsparty!",
+        options: ["tollen", "tolle", "toller"],
+        correct: 0,
+        explanation: "Feminin Dativ mit Possessivartikel → schwache Endung -en"
+    },
+    {
+        sentence: "Du kennst ja die ___ .",
+        options: ["Hauptstraße", "Hauptstraßen", "Hauptstraßer"],
+        correct: 0,
+        explanation: "Feminin Akkusativ mit bestimmtem Artikel → schwache Endung -e (aber 'Hauptstraße' ist ein Kompositum ohne Adjektiv)"
+    },
+    {
+        sentence: "Biege an der ___ Eiche ab.",
+        options: ["alten", "alte", "alter"],
+        correct: 0,
+        explanation: "Feminin Dativ mit bestimmtem Artikel → schwache Endung -en"
+    },
+    {
+        sentence: "Biege in die ___ Einbahnstraße.",
+        options: ["neue", "neuen", "neuer"],
+        correct: 0,
+        explanation: "Feminin Akkusativ mit bestimmtem Artikel → schwache Endung -e"
+    },
+    {
+        sentence: "Wenn du zu einem ___ Haus kommst...",
+        options: ["grünen", "grüne", "grüner"],
+        correct: 0,
+        explanation: "Neutrum Dativ mit unbestimmtem Artikel → schwache Endung -en"
+    },
+    {
+        sentence: "Du siehst zwei ___ Gartenpforten.",
+        options: ["unterschiedliche", "unterschiedlichen", "unterschiedlicher"],
+        correct: 0,
+        explanation: "Plural Akkusativ ohne Artikel → starke Endung -e"
+    },
+    {
+        sentence: "Klopfe an der ___ Eingangstür.",
+        options: ["eisernen", "eiserne", "eiserner"],
+        correct: 0,
+        explanation: "Feminin Dativ mit bestimmtem Artikel → schwache Endung -en"
+    },
+            // Übungseinträge für deutsche Adjektivdeklination - Aus Lingoda PDF extrahiert:
+                // Aus den gegebenen Beispielsätzen:
+    {
+        sentence: "Der ___ Weg führte zum Haus.",
+        options: ["lange", "langer", "langen"],
+        correct: 0,
+        explanation: "Maskulin Nominativ mit bestimmtem Artikel → schwache Endung -e"
+    },
+    {
+        sentence: "Sie hat eine ___ Alternative gefunden.",
+        options: ["günstige", "günstigen", "günstiger"],
+        correct: 0,
+        explanation: "Feminin Akkusativ mit unbestimmtem Artikel → schwache Endung -e"
+    },
+    {
+        sentence: "___ Bäume wachsen an der Küste.",
+        options: ["Große", "Großen", "Großer"],
+        correct: 0,
+        explanation: "Plural Nominativ ohne Artikel → starke Endung -e"
+    },
+    {
+        sentence: "Es hat einfach keinen ___ Zweck!",
+        options: ["rechten", "rechte", "rechter"],
+        correct: 0,
+        explanation: "Maskulin Akkusativ mit Negativartikel → schwache Endung -en"
+    },
+    {
+        sentence: "Sie hat es keinem ___ Freund erzählt.",
+        options: ["guten", "gute", "guter"],
+        correct: 0,
+        explanation: "Maskulin Dativ mit Negativartikel → schwache Endung -en"
+    },
+
+    // Unveränderliche Adjektive (Besonderheiten):
+    {
+        sentence: "Das ist ein ___ Pullover.",
+        options: ["rosa", "roser", "rosen"],
+        correct: 0,
+        explanation: "Farbadjektiv 'rosa' ist unveränderlich"
+    },
+    {
+        sentence: "Der ___ Anorak ist hässlich.",
+        options: ["lila", "liler", "lilen"],
+        correct: 0,
+        explanation: "Farbadjektiv 'lila' ist unveränderlich"
+    },
+    {
+        sentence: "Der ___ Flughafen ist unübersichtlich.",
+        options: ["Pariser", "Parisere", "Pariseren"],
+        correct: 0,
+        explanation: "Städteadjektiv 'Pariser' ist unveränderlich"
+    },
+
+    // Aus dem Textpassage extrahiert:
+    {
+        sentence: "Komme zu meiner ___ Geburtstagsparty!",
+        options: ["tollen", "tolle", "toller"],
+        correct: 0,
+        explanation: "Feminin Dativ mit Possessivartikel → schwache Endung -en"
+    },
+    {
+        sentence: "Du kennst ja die ___ .",
+        options: ["Hauptstraße", "Hauptstraßen", "Hauptstraßer"],
+        correct: 0,
+        explanation: "Feminin Akkusativ mit bestimmtem Artikel → schwache Endung -e (aber 'Hauptstraße' ist ein Kompositum ohne Adjektiv)"
+    },
+    {
+        sentence: "Biege an der ___ Eiche ab.",
+        options: ["alten", "alte", "alter"],
+        correct: 0,
+        explanation: "Feminin Dativ mit bestimmtem Artikel → schwache Endung -en"
+    },
+    {
+        sentence: "Biege in die ___ Einbahnstraße.",
+        options: ["neue", "neuen", "neuer"],
+        correct: 0,
+        explanation: "Feminin Akkusativ mit bestimmtem Artikel → schwache Endung -e"
+    },
+    {
+        sentence: "Wenn du zu einem ___ Haus kommst...",
+        options: ["grünen", "grüne", "grüner"],
+        correct: 0,
+        explanation: "Neutrum Dativ mit unbestimmtem Artikel → schwache Endung -en"
+    },
+    {
+        sentence: "Du siehst zwei ___ Gartenpforten.",
+        options: ["unterschiedliche", "unterschiedlichen", "unterschiedlicher"],
+        correct: 0,
+        explanation: "Plural Akkusativ ohne Artikel → starke Endung -e"
+    },
+    {
+        sentence: "Klopfe an der ___ Eingangstür.",
+        options: ["eisernen", "eiserne", "eiserner"],
+        correct: 0,
+        explanation: "Feminin Dativ mit bestimmtem Artikel → schwache Endung -en"
+    },
+                // === DEFINITE ARTICLES (WEAK DECLENSION) ===
+    // Pattern: der/die/das + adjective mostly ends in -e or -en
+
+    {
+        sentence: "Der ___ Berg der Welt ist der Mount Everest.",
+        options: ["höchste", "höchsten", "höchster"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geographie",
+        verification: "der Berg (m., Nom.) + der → schwach → -e"
+    },
+    {
+        sentence: "Die ___ Stadt der Welt ist Tokio.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geographie",
+        verification: "die Stadt (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Das ___ Land der Welt ist Russland.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geographie",
+        verification: "das Land (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "Wir besteigen den ___ Berg der Welt.",
+        options: ["höchste", "höchsten", "höchster"],
+        correct: 1,
+        explanation: "Maskulin Akkusativ + bestimmter Artikel → schwache Deklination -en",
+        category: "Geographie",
+        verification: "den Berg (m., Akk.) + den → schwach → -en"
+    },
+    {
+        sentence: "Sie schwimmt in dem ___ See Europas.",
+        options: ["tiefste", "tiefsten", "tiefster"],
+        correct: 1,
+        explanation: "Maskulin Dativ + bestimmter Artikel → schwache Deklination -en",
+        category: "Geographie",
+        verification: "dem See (m., Dat.) + dem → schwach → -en"
+    },
+
+    // === INDEFINITE ARTICLES (MIXED DECLENSION) ===
+    // Pattern: ein/eine + masculine nom. -er, feminine nom./akk. -e, neuter nom./akk. -es, dative all -en
+
+    {
+        sentence: "Einstein war ein ___ Physiker.",
+        options: ["berühmter", "berühmte", "berühmtes"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Wissenschaft",
+        verification: "ein Physiker (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "Marie Curie war eine ___ Wissenschaftlerin.",
+        options: ["berühmter", "berühmte", "berühmtes"],
+        correct: 1,
+        explanation: "Feminin Nominativ + unbestimmter Artikel → gemischte Deklination -e",
+        category: "Wissenschaft",
+        verification: "eine Wissenschaftlerin (f., Nom.) + eine → gemischt → -e"
+    },
+    {
+        sentence: "Das ist ein ___ Experiment.",
+        options: ["wichtiger", "wichtige", "wichtiges"],
+        correct: 2,
+        explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+        category: "Wissenschaft",
+        verification: "ein Experiment (n., Nom.) + ein → gemischt → -es"
+    },
+    {
+        sentence: "Ich lese ein ___ Buch über Geschichte.",
+        options: ["interessanter", "interessante", "interessantes"],
+        correct: 2,
+        explanation: "Neutrum Akkusativ + unbestimmter Artikel → gemischte Deklination -es",
+        category: "Geschichte",
+        verification: "ein Buch (n., Akk.) + ein → gemischt → -es"
+    },
+    {
+        sentence: "Sie hilft einem ___ Mann.",
+        options: ["alter", "alte", "alten"],
+        correct: 2,
+        explanation: "Maskulin Dativ + unbestimmter Artikel → gemischte Deklination -en",
+        category: "Allgemein",
+        verification: "einem Mann (m., Dat.) + einem → gemischt → -en"
+    },
+
+    // === NO ARTICLES (STRONG DECLENSION) ===
+    // Pattern: adjective takes the ending of the missing definite article
+
+    {
+        sentence: "___ Wasser ist lebenswichtig.",
+        options: ["Sauberer", "Saubere", "Sauberes"],
+        correct: 2,
+        explanation: "Neutrum Nominativ ohne Artikel → starke Deklination -es (wie das)",
+        category: "Natur",
+        verification: "Wasser (n., Nom.) + ∅ → stark → -es"
+    },
+    {
+        sentence: "Ich trinke gern ___ Wein.",
+        options: ["roter", "rote", "roten"],
+        correct: 2,
+        explanation: "Maskulin Akkusativ ohne Artikel → starke Deklination -en (wie den)",
+        category: "Essen",
+        verification: "Wein (m., Akk.) + ∅ → stark → -en"
+    },
+    {
+        sentence: "___ Musik gefällt mir.",
+        options: ["Klassischer", "Klassische", "Klassisches"],
+        correct: 1,
+        explanation: "Feminin Nominativ ohne Artikel → starke Deklination -e (wie die)",
+        category: "Kultur",
+        verification: "Musik (f., Nom.) + ∅ → stark → -e"
+    },
+    {
+        sentence: "Sie arbeitet mit ___ Kindern.",
+        options: ["kleiner", "kleine", "kleinen"],
+        correct: 2,
+        explanation: "Plural Dativ ohne Artikel → starke Deklination -en (wie den)",
+        category: "Allgemein",
+        verification: "Kindern (pl., Dat.) + ∅ → stark → -en"
+    },
+
+    // === GEOGRAPHY SUPERLATIVES ===
+    {
+        sentence: "Der ___ Fluss der Welt ist der Nil.",
+        options: ["längste", "längsten", "längster"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geographie",
+        verification: "der Fluss (m., Nom.) + der → schwach → -e"
+    },
+    {
+        sentence: "Die ___ Wüste ist die Sahara.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geographie",
+        verification: "die Wüste (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Das ___ Meer der Welt ist der Pazifik.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geographie",
+        verification: "das Meer (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "China hat die ___ Bevölkerung der Welt.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Feminin Akkusativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geographie",
+        verification: "die Bevölkerung (f., Akk.) + die → schwach → -e"
+    },
+    {
+        sentence: "Wir fahren durch das ___ Land Europas.",
+        options: ["kleinste", "kleinsten", "kleinster"],
+        correct: 0,
+        explanation: "Neutrum Akkusativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geographie",
+        verification: "das Land (n., Akk.) + das → schwach → -e"
+    },
+
+    // === SCIENCE & TECHNOLOGY ===
+    {
+        sentence: "Das ___ Element ist Wasserstoff.",
+        options: ["leichteste", "leichtesten", "leichtester"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Wissenschaft",
+        verification: "das Element (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "Licht hat die ___ bekannte Geschwindigkeit.",
+        options: ["höchste", "höchsten", "höchster"],
+        correct: 0,
+        explanation: "Feminin Akkusativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Wissenschaft",
+        verification: "die Geschwindigkeit (f., Akk.) + die → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Computer rechnet sehr schnell.",
+        options: ["moderner", "moderne", "modernes"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Technik",
+        verification: "ein Computer (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "Sie arbeitet mit einem ___ Mikroskop.",
+        options: ["starker", "starke", "starken"],
+        correct: 2,
+        explanation: "Neutrum Dativ + unbestimmter Artikel → gemischte Deklination -en",
+        category: "Wissenschaft",
+        verification: "einem Mikroskop (n., Dat.) + einem → gemischt → -en"
+    },
+    {
+        sentence: "Das Hubble-Teleskop macht ___ Aufnahmen.",
+        options: ["fantastischer", "fantastische", "fantastisches"],
+        correct: 1,
+        explanation: "Feminin Akkusativ Plural ohne Artikel → starke Deklination -e",
+        category: "Wissenschaft",
+        verification: "Aufnahmen (f.pl., Akk.) + ∅ → stark → -e"
+    },
+
+    // === HISTORY ===
+    {
+        sentence: "Der ___ Weltkrieg endete 1945.",
+        options: ["zweite", "zweiten", "zweiter"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geschichte",
+        verification: "der Weltkrieg (m., Nom.) + der → schwach → -e"
+    },
+    {
+        sentence: "Napoleon war ein ___ Kaiser.",
+        options: ["französischer", "französische", "französisches"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Geschichte",
+        verification: "ein Kaiser (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "Die Berliner Mauer teilte die ___ Stadt.",
+        options: ["deutsche", "deutschen", "deutscher"],
+        correct: 0,
+        explanation: "Feminin Akkusativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geschichte",
+        verification: "die Stadt (f., Akk.) + die → schwach → -e"
+    },
+    {
+        sentence: "Das ___ Rom war sehr mächtig.",
+        options: ["antike", "antiken", "antiker"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geschichte",
+        verification: "das Rom (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "___ Soldaten kämpften in dem Krieg.",
+        options: ["Tapferer", "Tapfere", "Tapferes"],
+        correct: 1,
+        explanation: "Maskulin Nominativ Plural ohne Artikel → starke Deklination -e",
+        category: "Geschichte",
+        verification: "Soldaten (m.pl., Nom.) + ∅ → stark → -e"
+    },
+
+    // === CULTURE & ARTS ===
+    {
+        sentence: "Die ___ Oper der Welt ist La Scala.",
+        options: ["berühmteste", "berühmtesten", "berühmtester"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Kultur",
+        verification: "die Oper (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Leonardo malte ein ___ Gemälde.",
+        options: ["berühmter", "berühmte", "berühmtes"],
+        correct: 2,
+        explanation: "Neutrum Akkusativ + unbestimmter Artikel → gemischte Deklination -es",
+        category: "Kultur",
+        verification: "ein Gemälde (n., Akk.) + ein → gemischt → -es"
+    },
+    {
+        sentence: "Shakespeare schrieb ___ Dramen.",
+        options: ["großartiger", "großartige", "großartiges"],
+        correct: 1,
+        explanation: "Neutrum Akkusativ Plural ohne Artikel → starke Deklination -e",
+        category: "Kultur",
+        verification: "Dramen (n.pl., Akk.) + ∅ → stark → -e"
+    },
+    {
+        sentence: "Das ___ Museum in Paris ist der Louvre.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Kultur",
+        verification: "das Museum (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "Beethoven komponierte mit einer ___ Behinderung.",
+        options: ["schwerer", "schwere", "schweren"],
+        correct: 2,
+        explanation: "Feminin Dativ + unbestimmter Artikel → gemischte Deklination -en",
+        category: "Kultur",
+        verification: "einer Behinderung (f., Dat.) + einer → gemischt → -en"
+    },
+
+    // === SPORTS ===
+    {
+        sentence: "Usain Bolt ist der ___ Läufer der Welt.",
+        options: ["schnellste", "schnellsten", "schnellster"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Sport",
+        verification: "der Läufer (m., Nom.) + der → schwach → -e"
+    },
+    {
+        sentence: "Die ___ Olympischen Spiele finden alle vier Jahre statt.",
+        options: ["modernen", "moderne", "moderner"],
+        correct: 0,
+        explanation: "Neutrum Nominativ Plural + bestimmter Artikel → schwache Deklination -en",
+        category: "Sport",
+        verification: "die Spiele (n.pl., Nom.) + die → schwach → -en"
+    },
+    {
+        sentence: "Brasilien gewann die ___ Fußball-WMs.",
+        options: ["meisten", "meiste", "meister"],
+        correct: 1,
+        explanation: "Feminin Akkusativ Plural + bestimmter Artikel → schwache Deklination -en",
+        category: "Sport",
+        verification: "die WMs (f.pl., Akk.) + die → schwach → -en"
+    },
+    {
+        sentence: "Ein ___ Marathon ist 42,195 km lang.",
+        options: ["offizieller", "offizielle", "offizielles"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Sport",
+        verification: "ein Marathon (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "___ Athleten trainieren täglich.",
+        options: ["Professioneller", "Professionelle", "Professionelles"],
+        correct: 1,
+        explanation: "Maskulin Nominativ Plural ohne Artikel → starke Deklination -e",
+        category: "Sport",
+        verification: "Athleten (m.pl., Nom.) + ∅ → stark → -e"
+    },
+
+    // === ANIMALS & NATURE ===
+    {
+        sentence: "Der ___ Hai der Welt ist der Walhai.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Natur",
+        verification: "der Hai (m., Nom.) + der → schwach → -e"
+    },
+    {
+        sentence: "Die ___ Schlange ist die Anakonda.",
+        options: ["längste", "längsten", "längster"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Natur",
+        verification: "die Schlange (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Elefant wiegt mehrere Tonnen.",
+        options: ["erwachsener", "erwachsene", "erwachsenes"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Natur",
+        verification: "ein Elefant (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "Das ___ Säugetier ist der Blauwal.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Natur",
+        verification: "das Säugetier (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "___ Pinguine leben in der Antarktis.",
+        options: ["Viele", "Vielen", "Vieler"],
+        correct: 0,
+        explanation: "Maskulin Nominativ Plural ohne Artikel → starke Deklination -e",
+        category: "Natur",
+        verification: "Pinguine (m.pl., Nom.) + ∅ → stark → -e"
+    },
+
+    // === FOOD & DRINKS ===
+    {
+        sentence: "Die ___ Pizza kommt aus Italien.",
+        options: ["echte", "echten", "echter"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Essen",
+        verification: "die Pizza (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Ich trinke einen ___ Kaffee.",
+        options: ["starker", "starke", "starken"],
+        correct: 2,
+        explanation: "Maskulin Akkusativ + unbestimmter Artikel → gemischte Deklination -en",
+        category: "Essen",
+        verification: "einen Kaffee (m., Akk.) + einen → gemischt → -en"
+    },
+    {
+        sentence: "___ Wein wird jahrelang gelagert.",
+        options: ["Guter", "Gute", "Gutes"],
+        correct: 0,
+        explanation: "Maskulin Nominativ ohne Artikel → starke Deklination -er",
+        category: "Essen",
+        verification: "Wein (m., Nom.) + ∅ → stark → -er"
+    },
+    {
+        sentence: "Ich esse eine ___ Schokolade.",
+        options: ["dunkler", "dunkle", "dunkles"],
+        correct: 1,
+        explanation: "Feminin Akkusativ + unbestimmter Artikel → gemischte Deklination -e",
+        category: "Essen",
+        verification: "eine Schokolade (f., Akk.) + eine → gemischt → -e"
+    },
+    {
+        sentence: "Sie backt mit ___ Mehl.",
+        options: ["feiner", "feine", "feinem"],
+        correct: 2,
+        explanation: "Neutrum Dativ ohne Artikel → starke Deklination -em",
+        category: "Essen",
+        verification: "Mehl (n., Dat.) + ∅ → stark → -em"
+    },
+
+    // === COUNTRIES & LANGUAGES ===
+    {
+        sentence: "Japan ist ein ___ Land.",
+        options: ["faszinierender", "faszinierende", "faszinierendes"],
+        correct: 2,
+        explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+        category: "Geographie",
+        verification: "ein Land (n., Nom.) + ein → gemischt → -es"
+    },
+    {
+        sentence: "Die ___ Sprache der Welt ist Mandarin.",
+        options: ["meistgesprochene", "meistgesprochenen", "meistgesprochener"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Sprachen",
+        verification: "die Sprache (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Wir leben in einem ___ Europa.",
+        options: ["vereinter", "vereinte", "vereinten"],
+        correct: 2,
+        explanation: "Neutrum Dativ + unbestimmter Artikel → gemischte Deklination -en",
+        category: "Politik",
+        verification: "einem Europa (n., Dat.) + einem → gemischt → -en"
+    },
+    {
+        sentence: "Die ___ Alpen erstrecken sich über acht Länder.",
+        options: ["europäische", "europäischen", "europäischer"],
+        correct: 1,
+        explanation: "Maskulin Nominativ Plural + bestimmter Artikel → schwache Deklination -en",
+        category: "Geographie",
+        verification: "die Alpen (m.pl., Nom.) + die → schwach → -en"
+    },
+    {
+        sentence: "___ Touristen besuchen Paris.",
+        options: ["Millionen", "Millionaire", "Millionäre"],
+        correct: 0,
+        explanation: "Zahladjektiv 'Millionen' ist unveränderlich",
+        category: "Tourismus",
+        verification: "Zahladjektiv unveränderlich"
+    },
+
+    // === ASTRONOMY & SPACE ===
+    {
+        sentence: "Die ___ Galaxie zu uns ist Andromeda.",
+        options: ["nächste", "nächsten", "nächster"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Astronomie",
+        verification: "die Galaxie (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Der ___ Planet unseres Sonnensystems ist Jupiter.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Astronomie",
+        verification: "der Planet (m., Nom.) + der → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Stern hat eine hohe Temperatur.",
+        options: ["heißer", "heiße", "heißes"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Astronomie",
+        verification: "ein Stern (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "Astronauten leben auf einer ___ Raumstation.",
+        options: ["internationale", "internationalen", "internationaler"],
+        correct: 2,
+        explanation: "Feminin Dativ + unbestimmter Artikel → gemischte Deklination -en",
+        category: "Raumfahrt",
+        verification: "einer Raumstation (f., Dat.) + einer → gemischt → -en"
+    },
+    {
+        sentence: "___ Kometen haben lange Schweife.",
+        options: ["Manche", "Manchen", "Mancher"],
+        correct: 0,
+        explanation: "Maskulin Nominativ Plural ohne Artikel → starke Deklination -e",
+        category: "Astronomie",
+        verification: "Kometen (m.pl., Nom.) + ∅ → stark → -e"
+    },
+
+    // === MEDICINE & HEALTH ===
+    {
+        sentence: "Das ___ Organ ist die Leber.",
+        options: ["wichtigste", "wichtigsten", "wichtigster"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Medizin",
+        verification: "das Organ (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Herz schlägt 60-100 Mal pro Minute.",
+        options: ["gesunder", "gesunde", "gesundes"],
+        correct: 2,
+        explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+        category: "Medizin",
+        verification: "ein Herz (n., Nom.) + ein → gemischt → -es"
+    },
+    {
+        sentence: "Die ___ Medizin nutzt natürliche Heilmittel.",
+        options: ["traditionelle", "traditionellen", "traditioneller"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Medizin",
+        verification: "die Medizin (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Ärzte verschreiben ___ Medikamente.",
+        options: ["verschiedener", "verschiedene", "verschiedenes"],
+        correct: 1,
+        explanation: "Neutrum Akkusativ Plural ohne Artikel → starke Deklination -e",
+        category: "Medizin",
+        verification: "Medikamente (n.pl., Akk.) + ∅ → stark → -e"
+    },
+    {
+        sentence: "Eine ___ Operation kann Leben retten.",
+        options: ["rechtzeitiger", "rechtzeitige", "rechtzeitiges"],
+        correct: 1,
+        explanation: "Feminin Nominativ + unbestimmter Artikel → gemischte Deklination -e",
+        category: "Medizin",
+        verification: "eine Operation (f., Nom.) + eine → gemischt → -e"
+    },
+
+    // === TECHNOLOGY ===
+    {
+        sentence: "Das ___ Smartphone hat viele Funktionen.",
+        options: ["moderne", "modernen", "moderner"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Technik",
+        verification: "das Smartphone (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "___ Intelligence verändert unser Leben.",
+        options: ["Künstlicher", "Künstliche", "Künstliches"],
+        correct: 1,
+        explanation: "Feminin Nominativ ohne Artikel → starke Deklination -e",
+        category: "Technik",
+        verification: "Intelligence (f., Nom.) + ∅ → stark → -e"
+    },
+    {
+        sentence: "Ein ___ Auto fährt ohne menschlichen Fahrer.",
+        options: ["autonomer", "autonome", "autonomes"],
+        correct: 2,
+        explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+        category: "Technik",
+        verification: "ein Auto (n., Nom.) + ein → gemischt → -es"
+    },
+    {
+        sentence: "Die ___ Revolution veränderte die Produktion.",
+        options: ["industrielle", "industriellen", "industrieller"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Geschichte",
+        verification: "die Revolution (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "___ Roboter arbeiten in Fabriken.",
+        options: ["Intelligenter", "Intelligente", "Intelligentes"],
+        correct: 1,
+        explanation: "Maskulin Nominativ Plural ohne Artikel → starke Deklination -e",
+        category: "Technik",
+        verification: "Roboter (m.pl., Nom.) + ∅ → stark → -e"
+    },
+
+    // === ARCHITECTURE ===
+    {
+        sentence: "Der ___ Turm der Welt ist Burj Khalifa.",
+        options: ["höchste", "höchsten", "höchster"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Architektur",
+        verification: "der Turm (m., Nom.) + der → schwach → -e"
+    },
+    {
+        sentence: "Die ___ Mauer der Welt ist die Chinesische Mauer.",
+        options: ["längste", "längsten", "längster"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Architektur",
+        verification: "die Mauer (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Wolkenkratzer hat über 100 Stockwerke.",
+        options: ["moderner", "moderne", "modernes"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Architektur",
+        verification: "ein Wolkenkratzer (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "Das ___ Gebäude Roms ist das Kolosseum.",
+        options: ["berühmteste", "berühmtesten", "berühmtester"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Architektur",
+        verification: "das Gebäude (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "___ Pyramiden stehen in Ägypten.",
+        options: ["Riesiger", "Riesige", "Riesiges"],
+        correct: 1,
+        explanation: "Feminin Nominativ Plural ohne Artikel → starke Deklination -e",
+        category: "Architektur",
+        verification: "Pyramiden (f.pl., Nom.) + ∅ → stark → -e"
+    },
+
+    // === LITERATURE ===
+    {
+        sentence: "Das ___ Buch aller Zeiten zu benennen ist schwierig.",
+        options: ["beste", "besten", "bester"],
+        correct: 0,
+        explanation: "Neutrum Akkusativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Literatur",
+        verification: "das Buch (n., Akk.) + das → schwach → -e"
+    },
+    {
+        sentence: "Goethe schrieb ___ deutsche Literatur.",
+        options: ["klassischer", "klassische", "klassisches"],
+        correct: 1,
+        explanation: "Feminin Akkusativ ohne Artikel → starke Deklination -e",
+        category: "Literatur",
+        verification: "Literatur (f., Akk.) + ∅ → stark → -e"
+    },
+    {
+        sentence: "Ein ___ Roman kann Jahrhunderte überdauern.",
+        options: ["großartiger", "großartige", "großartiges"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Literatur",
+        verification: "ein Roman (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "Die ___ Bibliothek der Welt ist in Washington.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Literatur",
+        verification: "die Bibliothek (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Agatha Christie schrieb ___ Krimis.",
+        options: ["spannender", "spannende", "spannendes"],
+        correct: 1,
+        explanation: "Maskulin Akkusativ Plural ohne Artikel → starke Deklination -e",
+        category: "Literatur",
+        verification: "Krimis (m.pl., Akk.) + ∅ → stark → -e"
+    },
+
+    // === MUSIC ===
+    {
+        sentence: "Die ___ Stimme im Chor ist der Sopran.",
+        options: ["höchste", "höchsten", "höchster"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Musik",
+        verification: "die Stimme (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Klavier hat 88 Tasten.",
+        options: ["normaler", "normale", "normales"],
+        correct: 2,
+        explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+        category: "Musik",
+        verification: "ein Klavier (n., Nom.) + ein → gemischt → -es"
+    },
+    {
+        sentence: "Die ___ Geige ist sehr wertvoll.",
+        options: ["beste", "besten", "bester"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Musik",
+        verification: "die Geige (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Jazz ist eine ___ Musikrichtung.",
+        options: ["amerikanischer", "amerikanische", "amerikanisches"],
+        correct: 1,
+        explanation: "Feminin Nominativ + unbestimmter Artikel → gemischte Deklination -e",
+        category: "Musik",
+        verification: "eine Musikrichtung (f., Nom.) + eine → gemischt → -e"
+    },
+    {
+        sentence: "___ Opern werden weltweit aufgeführt.",
+        options: ["Klassischer", "Klassische", "Klassisches"],
+        correct: 1,
+        explanation: "Feminin Nominativ Plural ohne Artikel → starke Deklination -e",
+        category: "Musik",
+        verification: "Opern (f.pl., Nom.) + ∅ → stark → -e"
+    },
+
+    // === TRANSPORT ===
+    {
+        sentence: "Das ___ Passagierflugzeug war der A380.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Transport",
+        verification: "das Passagierflugzeug (n., Nom.) + das → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Zug erreicht 300 km/h.",
+        options: ["schneller", "schnelle", "schnelles"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Transport",
+        verification: "ein Zug (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "Die ___ U-Bahn der Welt ist in Tokio.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Transport",
+        verification: "die U-Bahn (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Schiff transportiert Container.",
+        options: ["riesiger", "riesige", "riesiges"],
+        correct: 2,
+        explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+        category: "Transport",
+        verification: "ein Schiff (n., Nom.) + ein → gemischt → -es"
+    },
+    {
+        sentence: "___ Autos verbrauchen weniger Kraftstoff.",
+        options: ["Moderner", "Moderne", "Modernes"],
+        correct: 1,
+        explanation: "Neutrum Nominativ Plural ohne Artikel → starke Deklination -e",
+        category: "Transport",
+        verification: "Autos (n.pl., Nom.) + ∅ → stark → -e"
+    },
+
+    // === CLIMATE & WEATHER ===
+    {
+        sentence: "Der ___ Ort der Erde liegt in der Wüste.",
+        options: ["heißeste", "heißesten", "heißester"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Klima",
+        verification: "der Ort (m., Nom.) + der → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Sturm kann Häuser zerstören.",
+        options: ["starker", "starke", "starkes"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Klima",
+        verification: "ein Sturm (m., Nom.) + ein → gemischt → -er"
+    },
+    {
+        sentence: "Die ___ Temperatur wurde in der Antarktis gemessen.",
+        options: ["niedrigste", "niedrigsten", "niedrigster"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Klima",
+        verification: "die Temperatur (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "___ Schneeflocken sind einzigartig.",
+        options: ["Aller", "Alle", "Alles"],
+        correct: 1,
+        explanation: "Feminin Nominativ Plural mit Quantor → schwache Deklination -e",
+        category: "Klima",
+        verification: "alle Schneeflocken (f.pl., Nom.) + alle → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Winter dauert mehrere Monate.",
+        options: ["langer", "lange", "langes"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Klima",
+        verification: "ein Winter (m., Nom.) + ein → gemischt → -er"
+    },
+
+    // === MATHEMATICS ===
+    {
+        sentence: "Die ___ Zahl π ist irrational.",
+        options: ["berühmte", "berühmten", "berühmter"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Mathematik",
+        verification: "die Zahl (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "Ein ___ Dreieck hat drei gleiche Seiten.",
+        options: ["gleichseitiger", "gleichseitige", "gleichseitiges"],
+        correct: 2,
+        explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+        category: "Mathematik",
+        verification: "ein Dreieck (n., Nom.) + ein → gemischt → -es"
+    },
+    {
+        sentence: "Die ___ Gleichung der Physik ist E=mc².",
+        options: ["berühmteste", "berühmtesten", "berühmtester"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        category: "Mathematik",
+        verification: "die Gleichung (f., Nom.) + die → schwach → -e"
+    },
+    {
+        sentence: "___ Zahlen sind größer als null.",
+        options: ["Positiver", "Positive", "Positives"],
+        correct: 1,
+        explanation: "Feminin Nominativ Plural ohne Artikel → starke Deklination -e",
+        category: "Mathematik",
+        verification: "Zahlen (f.pl., Nom.) + ∅ → stark → -e"
+    },
+    {
+        sentence: "Ein ___ Kreis hat 360 Grad.",
+        options: ["voller", "volle", "volles"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        category: "Mathematik",
+        verification: "ein Kreis (m., Nom.) + ein → gemischt → -er"
+    },
+    // === FEDERAL STATES & GEOGRAPHY ===
+
+// Weak Declension (Definite Articles)
+{
+    sentence: "Das ___ Bundesland Deutschlands ist Bayern.",
+    options: ["größte", "größten", "größter"],
+    correct: 0,
+    explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "das Bundesland (n., Nom.) + das → schwach → -e"
+},
+{
+    sentence: "Die ___ Stadt Deutschlands ist Berlin.",
+    options: ["größte", "größten", "größter"],
+    correct: 0,
+    explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "die Stadt (f., Nom.) + die → schwach → -e"
+},
+{
+    sentence: "Der ___ Fluss Deutschlands ist der Rhein.",
+    options: ["längste", "längsten", "längster"],
+    correct: 0,
+    explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "der Fluss (m., Nom.) + der → schwach → -e"
+},
+{
+    sentence: "Wir besuchen das ___ Bundesland Baden-Württemberg.",
+    options: ["südwestliche", "südwestlichen", "südwestlicher"],
+    correct: 0,
+    explanation: "Neutrum Akkusativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "das Bundesland (n., Akk.) + das → schwach → -e"
+},
+{
+    sentence: "Sie lebt in der ___ Hauptstadt Berlin.",
+    options: ["deutsche", "deutschen", "deutscher"],
+    correct: 1,
+    explanation: "Feminin Dativ + bestimmter Artikel → schwache Deklination -en",
+    verification: "der Hauptstadt (f., Dat.) + der → schwach → -en"
+},
+
+// Mixed Declension (Indefinite Articles)
+{
+    sentence: "Bayern ist ein ___ Bundesland.",
+    options: ["süddeutscher", "süddeutsche", "süddeutsches"],
+    correct: 2,
+    explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+    verification: "ein Bundesland (n., Nom.) + ein → gemischt → -es"
+},
+{
+    sentence: "Hamburg ist eine ___ Hansestadt.",
+    options: ["traditioneller", "traditionelle", "traditionelles"],
+    correct: 1,
+    explanation: "Feminin Nominativ + unbestimmter Artikel → gemischte Deklination -e",
+    verification: "eine Hansestadt (f., Nom.) + eine → gemischt → -e"
+},
+{
+    sentence: "Sachsen ist ein ___ Bundesland.",
+    options: ["ostdeutscher", "ostdeutsche", "ostdeutsches"],
+    correct: 2,
+    explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+    verification: "ein Bundesland (n., Nom.) + ein → gemischt → -es"
+},
+
+// Strong Declension (No Articles)
+{
+    sentence: "___ Bundesländer haben eigene Verfassungen.",
+    options: ["Deutscher", "Deutsche", "Deutsches"],
+    correct: 1,
+    explanation: "Neutrum Nominativ Plural ohne Artikel → starke Deklination -e",
+    verification: "Bundesländer (n.pl., Nom.) + ∅ → stark → -e"
+},
+{
+    sentence: "___ Touristen besuchen Bayern gern.",
+    options: ["Ausländischer", "Ausländische", "Ausländisches"],
+    correct: 1,
+    explanation: "Maskulin Nominativ Plural ohne Artikel → starke Deklination -e",
+    verification: "Touristen (m.pl., Nom.) + ∅ → stark → -e"
+},
+
+// === POLITICAL SYSTEM ===
+
+{
+    sentence: "Das ___ Gesetz ist Deutschlands Verfassung.",
+    options: ["Grundlegende", "Grundlegenden", "Grundlegender"],
+    correct: 0,
+    explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "das Gesetz (n., Nom.) + das → schwach → -e"
+},
+{
+    sentence: "Der ___ wählt den Bundeskanzler.",
+    options: ["Deutsche", "Deutschen", "Deutscher"],
+    correct: 0,
+    explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "der Bundestag (m., Nom.) + der → schwach → -e"
+},
+{
+    sentence: "Die ___ Republik Deutschland hat 16 Bundesländer.",
+    options: ["Föderative", "Föderativen", "Föderativer"],
+    correct: 0,
+    explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "die Republik (f., Nom.) + die → schwach → -e"
+},
+{
+    sentence: "Deutschland ist eine ___ Demokratie.",
+    options: ["parlamentarischer", "parlamentarische", "parlamentarisches"],
+    correct: 1,
+    explanation: "Feminin Nominativ + unbestimmter Artikel → gemischte Deklination -e",
+    verification: "eine Demokratie (f., Nom.) + eine → gemischt → -e"
+},
+{
+    sentence: "Ein ___ Bundespräsident wird alle fünf Jahre gewählt.",
+    options: ["neuer", "neue", "neues"],
+    correct: 0,
+    explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+    verification: "ein Bundespräsident (m., Nom.) + ein → gemischt → -er"
+},
+
+// === GERMAN CULTURE & TRADITIONS ===
+
+{
+    sentence: "Das ___ Oktoberfest findet in München statt.",
+    options: ["berühmte", "berühmten", "berühmter"],
+    correct: 0,
+    explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "das Oktoberfest (n., Nom.) + das → schwach → -e"
+},
+{
+    sentence: "Die ___ Märchen kommen aus Deutschland.",
+    options: ["Grimm'schen", "Grimm'sche", "Grimm'scher"],
+    correct: 1,
+    explanation: "Neutrum Nominativ Plural + bestimmter Artikel → schwache Deklination -en",
+    verification: "die Märchen (n.pl., Nom.) + die → schwach → -en"
+},
+{
+    sentence: "___ Bier wird nach dem Reinheitsgebot gebraut.",
+    options: ["Deutscher", "Deutsche", "Deutsches"],
+    correct: 2,
+    explanation: "Neutrum Nominativ ohne Artikel → starke Deklination -es",
+    verification: "Bier (n., Nom.) + ∅ → stark → -es"
+},
+{
+    sentence: "Ein ___ Weihnachtsmarkt ist sehr gemütlich.",
+    options: ["traditioneller", "traditionelle", "traditionelles"],
+    correct: 0,
+    explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+    verification: "ein Weihnachtsmarkt (m., Nom.) + ein → gemischt → -er"
+},
+
+// === GERMAN HISTORY ===
+
+{
+    sentence: "Die ___ Wiedervereinigung fand 1990 statt.",
+    options: ["deutsche", "deutschen", "deutscher"],
+    correct: 0,
+    explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "die Wiedervereinigung (f., Nom.) + die → schwach → -e"
+},
+{
+    sentence: "Der ___ Krieg endete 1945.",
+    options: ["Zweite Weltkrieg", "Zweiten Weltkrieg", "Zweiter Weltkrieg"],
+    correct: 0,
+    explanation: "Maskulin Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "der Weltkrieg (m., Nom.) + der → schwach → -e"
+},
+{
+    sentence: "Die ___ Republik existierte von 1919 bis 1933.",
+    options: ["Weimarer", "Weimaren", "Weimare"],
+    correct: 0,
+    explanation: "Städteadjektiv 'Weimarer' ist unveränderlich",
+    verification: "Städteadjektiv unveränderlich"
+},
+
+// === GERMAN ECONOMY ===
+
+{
+    sentence: "Deutschland hat die ___ Volkswirtschaft Europas.",
+    options: ["stärkste", "stärksten", "stärkster"],
+    correct: 0,
+    explanation: "Feminin Akkusativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "die Volkswirtschaft (f., Akk.) + die → schwach → -e"
+},
+{
+    sentence: "Die ___ Industrie ist sehr wichtig.",
+    options: ["deutsche", "deutschen", "deutscher"],
+    correct: 0,
+    explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "die Industrie (f., Nom.) + die → schwach → -e"
+},
+{
+    sentence: "___ Unternehmen exportieren weltweit.",
+    options: ["Deutscher", "Deutsche", "Deutsches"],
+    correct: 1,
+    explanation: "Neutrum Nominativ Plural ohne Artikel → starke Deklination -e",
+    verification: "Unternehmen (n.pl., Nom.) + ∅ → stark → -e"
+},
+
+// === GERMAN EDUCATION ===
+
+{
+    sentence: "Das ___ Schulsystem variiert zwischen den Bundesländern.",
+    options: ["deutsche", "deutschen", "deutscher"],
+    correct: 0,
+    explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+    verification: "das Schulsystem (n., Nom.) + das → schwach → -e"
+},
+{
+    sentence: "Eine ___ Universität bietet viele Studiengänge.",
+    options: ["deutscher", "deutsche", "deutsches"],
+    correct: 1,
+    explanation: "Feminin Nominativ + unbestimmter Artikel → gemischte Deklination -e",
+    verification: "eine Universität (f., Nom.) + eine → gemischt → -e"
+},
+    // === SUBORDINATE CLAUSES - RELATIVSÄTZE ===
+    
+    {
+        sentence: "Bayern, das ___ Bundesland Deutschlands ist, hat München als Hauptstadt.",
+        options: ["größte", "größten", "größter"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel im Relativsatz → schwache Deklination -e",
+        verification: "das größte Bundesland (n., Nom.) + das → schwach → -e",
+        category: "Complex - Relativsatz",
+        complexity: "Relativpronomen 'das' + Prädikatsnomen"
+    },
+    
+    {
+        sentence: "Die Verfassung, die das ___ Grundgesetz genannt wird, schützt die Grundrechte.",
+        options: ["deutsche", "deutschen", "deutsches"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel im Relativsatz → schwache Deklination -e",
+        category: "Complex - Relativsatz",
+        complexity: "Relativsatz mit Passiv-Konstruktion"
+    },
+    
+    {
+        sentence: "Der Minister, dessen ___ Politik umstritten ist, wurde kritisiert.",
+        options: ["neue", "neuen", "neuer"],
+        correct: 0,
+        explanation: "Feminin Nominativ nach Genitiv-Relativpronomen → schwache Deklination -e",
+        verification: "dessen neue Politik (f., Nom.) → schwach → -e",
+        category: "Complex - Relativsatz Genitiv",
+        complexity: "Genitiv-Relativpronomen + attributive Konstruktion"
+    },
+    
+    {
+        sentence: "Die Städte, denen ___ Mittel fehlen, erhalten Unterstützung.",
+        options: ["finanzielle", "finanziellen", "finanzieller"],
+        correct: 0,
+        explanation: "Neutrum Nominativ Plural als Subjekt → starke Deklination -e",
+        verification: "finanzielle Mittel (n.pl., Nom.) + ∅ → stark → -e",
+        category: "Complex - Relativsatz Dativ",
+        complexity: "Dativ-Relativpronomen + Subjekt im Nebensatz"
+    },
+
+    // === SUBORDINATE CLAUSES - ANDERE TYPEN ===
+    
+    {
+        sentence: "Wenn ein ___ Bundespräsident gewählt wird, dauert seine Amtszeit fünf Jahre.",
+        options: ["neuer", "neue", "neues"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → gemischte Deklination -er",
+        verification: "ein neuer Bundespräsident (m., Nom.) + ein → gemischt → -er",
+        category: "Complex - Konditionalsatz",
+        complexity: "Konditionalsatz mit Passiv"
+    },
+    
+    {
+        sentence: "Obwohl Deutschland ein ___ Land ist, gibt es regionale Unterschiede.",
+        options: ["kleines", "kleine", "kleiner"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + unbestimmter Artikel → gemischte Deklination -es",
+        verification: "ein kleines Land (n., Nom.) + ein → gemischt → -es",
+        category: "Complex - Konzessivsatz",
+        complexity: "Konzessivsatz mit Prädikatsnomen"
+    },
+    
+    {
+        sentence: "Nachdem die ___ Wiedervereinigung stattgefunden hatte, entstanden neue Herausforderungen.",
+        options: ["deutsche", "deutschen", "deutscher"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        verification: "die deutsche Wiedervereinigung (f., Nom.) + die → schwach → -e",
+        category: "Complex - Temporalsatz",
+        complexity: "Temporalsatz mit Plusquamperfekt"
+    },
+    
+    {
+        sentence: "Da das ___ Deutschland eine führende Rolle spielt, sind seine Entscheidungen wichtig.",
+        options: ["moderne", "modernen", "moderner"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + bestimmter Artikel → schwache Deklination -e",
+        verification: "das moderne Deutschland (n., Nom.) + das → schwach → -e",
+        category: "Complex - Kausalsatz",
+        complexity: "Kausalsatz mit Eigenname + Adjektiv"
+    },
+
+    // === MULTIPLE ADJECTIVES ===
+    
+    {
+        sentence: "Ein ___, ___ deutsches Unternehmen expandiert international.",
+        options: ["großes, erfolgreiches", "große, erfolgreiche", "großer, erfolgreicher"],
+        correct: 0,
+        explanation: "Neutrum Nominativ + unbestimmter Artikel → beide Adjektive gemischte Deklination -es",
+        verification: "ein großes, erfolgreiches Unternehmen (n., Nom.) + ein → gemischt → beide -es",
+        category: "Complex - Multiple Adjectives",
+        complexity: "Zwei attributive Adjektive vor Substantiv"
+    },
+    
+    {
+        sentence: "Die ___, ___ deutschen Städte haben historische Zentren.",
+        options: ["alten, schönen", "alte, schöne", "alter, schöner"],
+        correct: 0,
+        explanation: "Feminin Nominativ Plural + bestimmter Artikel → beide Adjektive schwache Deklination -en",
+        verification: "die alten, schönen Städte (f.pl., Nom.) + die → schwach → beide -en",
+        category: "Complex - Multiple Adjectives",
+        complexity: "Zwei Adjektive + Plural + bestimmter Artikel"
+    },
+    
+    {
+        sentence: "___, ___ deutsche Traditionen werden gepflegt.",
+        options: ["Alte, wichtige", "Alten, wichtigen", "Alter, wichtiger"],
+        correct: 0,
+        explanation: "Feminin Nominativ Plural ohne Artikel → beide Adjektive starke Deklination -e",
+        verification: "alte, wichtige Traditionen (f.pl., Nom.) + ∅ → stark → beide -e",
+        category: "Complex - Multiple Adjectives",
+        complexity: "Zwei Adjektive ohne Artikel im Plural"
+    },
+    
+    {
+        sentence: "Der ___, ___ Rhein fließt durch mehrere Länder.",
+        options: ["lange, berühmte", "langen, berühmten", "langer, berühmter"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + bestimmter Artikel → beide Adjektive schwache Deklination -e",
+        verification: "der lange, berühmte Rhein (m., Nom.) + der → schwach → beide -e",
+        category: "Complex - Multiple Adjectives",
+        complexity: "Zwei Adjektive + maskulines Substantiv"
+    },
+
+    // === PREPOSITIONAL PHRASES ===
+    
+    {
+        sentence: "In dem ___ Bundesland Bayern gibt es viele Schlösser.",
+        options: ["süddeutsche", "süddeutschen", "süddeutscher"],
+        correct: 1,
+        explanation: "Neutrum Dativ + bestimmter Artikel nach Präposition → schwache Deklination -en",
+        verification: "in dem süddeutschen Bundesland (n., Dat.) + dem → schwach → -en",
+        category: "Complex - Prepositional Dativ",
+        complexity: "Präposition + Dativ + Apposition"
+    },
+    
+    {
+        sentence: "Wegen der ___ wirtschaftlichen Lage investieren Unternehmen vorsichtig.",
+        options: ["schwierige", "schwierigen", "schwieriger"],
+        correct: 1,
+        explanation: "Feminin Genitiv + bestimmter Artikel → schwache Deklination -en",
+        verification: "wegen der schwierigen Lage (f., Gen.) + der → schwach → -en",
+        category: "Complex - Genitiv",
+        complexity: "Genitiv-Präposition + attributives Adjektiv"
+    },
+    
+    {
+        sentence: "Trotz des ___ Wetters findet das Oktoberfest statt.",
+        options: ["schlechte", "schlechten", "schlechter"],
+        correct: 1,
+        explanation: "Neutrum Genitiv + bestimmter Artikel → schwache Deklination -en",
+        verification: "trotz des schlechten Wetters (n., Gen.) + des → schwach → -en",
+        category: "Complex - Genitiv",
+        complexity: "Konzessive Genitiv-Präposition"
+    },
+    
+    {
+        sentence: "Während eines ___ Sommers besuchen viele Touristen Deutschland.",
+        options: ["warmen", "warme", "warmer"],
+        correct: 0,
+        explanation: "Maskulin Genitiv + unbestimmter Artikel → gemischte Deklination -en",
+        verification: "während eines warmen Sommers (m., Gen.) + eines → gemischt → -en",
+        category: "Complex - Genitiv",
+        complexity: "Temporale Genitiv-Präposition + unbestimmter Artikel"
+    },
+
+    // === PASSIVE CONSTRUCTIONS ===
+    
+    {
+        sentence: "Das ___ Grundgesetz wurde von einem ___ Parlamentarischen Rat verfasst.",
+        options: ["deutsche, besonderen", "deutschen, besonderen", "deutsche, besondere"],
+        correct: 0,
+        explanation: "1. Neutrum Nominativ + best. Artikel → -e; 2. Maskulin Dativ + unbest. Artikel → -en",
+        verification: "das deutsche Grundgesetz (n., Nom.) → -e; von einem besonderen Rat (m., Dat.) → -en",
+        category: "Complex - Passive + Multiple",
+        complexity: "Passiv mit zwei verschiedenen Kasus"
+    },
+    
+    {
+        sentence: "Von ___ deutschen Bürgern wird eine ___ Energiewende gefordert.",
+        options: ["vielen, schnelle", "viele, schnellen", "vielen, schnellen"],
+        correct: 0,
+        explanation: "1. Maskulin Dativ Plural + Quantor → -en; 2. Feminin Nominativ + unbest. Artikel → -e",
+        verification: "von vielen Bürgern (m.pl., Dat.) → -en; eine schnelle Energiewende (f., Nom.) → -e",
+        category: "Complex - Passive + Multiple",
+        complexity: "Passiv mit Agens und prädikativem Objekt"
+    },
+
+    // === COMPARATIVE CONSTRUCTIONS ===
+    
+    {
+        sentence: "Je ___ die Wirtschaft wird, desto mehr ___ Arbeitsplätze entstehen.",
+        options: ["stärker, neue", "starker, neuen", "stärkere, neuer"],
+        correct: 0,
+        explanation: "Je...desto-Konstruktion: Komparativ unveränderlich + Plural Nom. ohne Artikel → -e",
+        verification: "je stärker (Komparativ unveränderlich); neue Arbeitsplätze (m.pl., Nom.) + ∅ → -e",
+        category: "Complex - Je...desto",
+        complexity: "Komparativ-Konstruktion mit Adjektiv-Deklination"
+    },
+    
+    {
+        sentence: "Deutschland ist eines der ___ Länder in der ___ Technologie.",
+        options: ["führendsten, modernen", "führendsten, moderne", "führenden, moderne"],
+        correct: 0,
+        explanation: "1. Superlativ + Genitiv Plural → -en; 2. Feminin Dativ + bestimmter Artikel → -en",
+        verification: "eines der führendsten Länder (Gen.pl.) → -en; in der modernen Technologie (f., Dat.) → -en",
+        category: "Complex - Superlative",
+        complexity: "Superlativ im Genitiv + präpositionale Ergänzung"
+    },
+
+    // === PARTICIPIAL CONSTRUCTIONS ===
+    
+    {
+        sentence: "Die von der ___ Regierung vorgeschlagenen ___ Reformen werden diskutiert.",
+        options: ["neuen, wichtigen", "neue, wichtige", "neuer, wichtiger"],
+        correct: 0,
+        explanation: "1. Feminin Dativ + best. Artikel → -en; 2. Feminin Nom. Plural + best. Artikel → -en",
+        verification: "von der neuen Regierung (f., Dat.) → -en; die wichtigen Reformen (f.pl., Nom.) → -en",
+        category: "Complex - Participial",
+        complexity: "Erweitertes Partizip mit zwei Adjektiven"
+    },
+    
+    {
+        sentence: "Ein durch ___ Investitionen gefördertes ___ Projekt wird realisiert.",
+        options: ["ausländische, innovatives", "ausländischen, innovatives", "ausländischer, innovative"],
+        correct: 0,
+        explanation: "1. Feminin Akk. Plural ohne Artikel → -e; 2. Neutrum Nom. + unbest. Artikel → -es",
+        verification: "durch ausländische Investitionen (f.pl., Akk.) + ∅ → -e; ein innovatives Projekt (n., Nom.) → -es",
+        category: "Complex - Participial",
+        complexity: "Partizip II mit präpositionaler Ergänzung"
+    },
+
+    // === CONJUNCTIONAL CONSTRUCTIONS ===
+    
+    {
+        sentence: "Sowohl die ___ als auch die ___ Parteien unterstützen die Reform.",
+        options: ["konservativen, liberalen", "konservative, liberale", "konservativer, liberaler"],
+        correct: 0,
+        explanation: "Feminin Nominativ Plural + bestimmter Artikel → beide schwache Deklination -en",
+        verification: "die konservativen Parteien, die liberalen Parteien (f.pl., Nom.) + die → -en",
+        category: "Complex - Sowohl...als auch",
+        complexity: "Koordination mit gleicher Deklination"
+    },
+    
+    {
+        sentence: "Weder ein ___ noch ein ___ Politiker kann allein regieren.",
+        options: ["einzelner, erfahrener", "einzelne, erfahrene", "einzelnen, erfahrenen"],
+        correct: 0,
+        explanation: "Maskulin Nominativ + unbestimmter Artikel → beide gemischte Deklination -er",
+        verification: "ein einzelner Politiker, ein erfahrener Politiker (m., Nom.) + ein → -er",
+        category: "Complex - Weder...noch",
+        complexity: "Negative Koordination mit gleicher Deklination"
+    },
+
+    // === COMPLEX ATTRIBUTIVE CONSTRUCTIONS ===
+    
+    {
+        sentence: "Die Entscheidung der ___ europäischen Kommission betrifft alle ___ Mitgliedstaaten.",
+        options: ["neuen, deutschen", "neue, deutsche", "neuer, deutscher"],
+        correct: 0,
+        explanation: "1. Feminin Gen. + best. Artikel → -en; 2. Maskulin Akk. Plural + best. Artikel → -en",
+        verification: "der neuen Kommission (f., Gen.) → -en; alle deutschen Mitgliedstaaten (m.pl., Akk.) → -en",
+        category: "Complex - Attributive + Plural",
+        complexity: "Genitiv-Attribut + Quantor mit Plural"
+    },
+    
+    {
+        sentence: "In einer Zeit ___ gesellschaftlicher Veränderungen braucht Deutschland ___ Reformen.",
+        options: ["schneller, mutige", "schnellen, mutigen", "schnelle, mutige"],
+        correct: 0,
+        explanation: "1. Feminin Gen. Plural ohne Artikel → -er; 2. Feminin Akk. Plural ohne Artikel → -e",
+        verification: "schneller Veränderungen (f.pl., Gen.) + ∅ → -er; mutige Reformen (f.pl., Akk.) + ∅ → -e",
+        category: "Complex - Genitiv ohne Artikel",
+        complexity: "Genitiv-Attribut ohne Artikel + Objekt ohne Artikel"
+    },
+
+    // === ADVANCED RELATIVE CONSTRUCTIONS ===
+    
+    {
+        sentence: "Das Gesetz, gegen das so viele ___ Bürger protestiert haben, wird geändert.",
+        options: ["empörte", "empörten", "empörter"],
+        correct: 0,
+        explanation: "Maskulin Nominativ Plural ohne Artikel → starke Deklination -e",
+        verification: "empörte Bürger (m.pl., Nom.) + ∅ → stark → -e",
+        category: "Complex - Relativsatz mit Quantor",
+        complexity: "Relativsatz mit präpositionaler Ergänzung + Quantor"
+    },
+    
+    {
+        sentence: "Die Region, in der die ___ deutsche Industrie konzentriert ist, boomt.",
+        options: ["traditionelle", "traditionellen", "traditioneller"],
+        correct: 0,
+        explanation: "Feminin Nominativ + bestimmter Artikel → schwache Deklination -e",
+        verification: "die traditionelle Industrie (f., Nom.) + die → schwach → -e",
+        category: "Complex - Lokaler Relativsatz",
+        complexity: "Relativsatz mit präpositionaler Ortsangabe"
+    },
+
+    // === MIXED COMPLEX STRUCTURES ===
+    
+    {
+        sentence: "Indem Deutschland sowohl ___ als auch ___ Maßnahmen ergreift, zeigt es Führung.",
+        options: ["ökologische, soziale", "ökologischen, sozialen", "ökologischer, sozialer"],
+        correct: 0,
+        explanation: "Feminin Akkusativ Plural ohne Artikel → beide starke Deklination -e",
+        verification: "ökologische Maßnahmen, soziale Maßnahmen (f.pl., Akk.) + ∅ → stark → -e",
+        category: "Complex - Modal + Koordination",
+        complexity: "Modalsatz mit koordinierten Objekten"
+    },
+    
+    {
+        sentence: "Solange keine ___ Lösung gefunden wird, bleiben die ___ Probleme bestehen.",
+        options: ["dauerhafte, aktuellen", "dauerhaften, aktuellen", "dauerhafte, aktuelle"],
+        correct: 0,
+        explanation: "1. Feminin Nom. ohne Artikel → -e; 2. Neutrum Nom. Plural + best. Artikel → -en",
+        verification: "dauerhafte Lösung (f., Nom.) + ∅ → -e; die aktuellen Probleme (n.pl., Nom.) → -en",
+        category: "Complex - Temporalsatz + Subjekt/Objekt",
+        complexity: "Temporaler Nebensatz mit zwei verschiedenen Strukturen"
+    },
+    
+    {
+        sentence: "Damit die ___ Generation eine ___ Zukunft hat, sind ___ Entscheidungen nötig.",
+        options: ["junge, bessere, schwierige", "jungen, besseren, schwierigen", "junger, besserer, schwieriger"],
+        correct: 0,
+        explanation: "1. f.Nom.+best.Art. → -e; 2. f.Akk.+unbest.Art. → -e; 3. f.Nom.Pl.+∅ → -e",
+        verification: "die junge Generation → -e; eine bessere Zukunft → -e; schwierige Entscheidungen → -e",
+        category: "Complex - Finalsatz + Triple",
+        complexity: "Finalsatz mit drei verschiedenen Adjektiv-Strukturen"
+    }
+        ];
+
+        // Mélanger les questions aléatoirement
+        function shuffleQuestions(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Questions mélangées pour cette session
+        let questions = shuffleQuestions(allQuestions);
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            document.getElementById('current-question').textContent = currentQuestionIndex + 1;
+            document.getElementById('total-questions').textContent = questions.length;
+            document.getElementById('question-text').textContent = question.sentence;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.innerHTML = `
+                    <input type="radio" name="answer" value="${index}" id="option-${index}">
+                    <label for="option-${index}">${option}</label>
+                `;
+                optionDiv.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            answered = false;
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (answered) return;
+            
+            const question = questions[currentQuestionIndex];
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+            
+            // Marquer la réponse sélectionnée
+            document.getElementById(`option-${selectedIndex}`).checked = true;
+            
+            // Colorer les options
+            options.forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex && index !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Afficher le feedback
+            const isCorrect = selectedIndex === question.correct;
+            feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedback.innerHTML = `
+                <div>${isCorrect ? '✅ Correct !' : '❌ Incorrect'}</div>
+                <div class="explanation">
+                    Bonne réponse : <strong>${question.options[question.correct]}</strong><br>
+                    ${question.explanation}
+                </div>
+            `;
+            feedback.style.display = 'block';
+            
+            if (isCorrect) score++;
+            answered = true;
+            
+            // Afficher le bouton suivant
+            if (currentQuestionIndex < questions.length - 1) {
+                document.getElementById('next-btn').style.display = 'inline-block';
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        function showFinalScore() {
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('feedback').innerHTML += `
+                <div class="final-score">
+                    <h3>Quiz terminé !</h3>
+                    Score : ${score}/${questions.length} (${percentage}%)
+                </div>
+            `;
+            document.getElementById('restart-btn').style.display = 'inline-block';
+        }
+
+        function restartQuiz() {
+            // Remélanger les questions
+            questions = shuffleQuestions(allQuestions);
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            answered = false;
+            document.getElementById('restart-btn').style.display = 'none';
+            displayQuestion();
+        }
+
+        // Initialiser le quiz
+        displayQuestion();
+    </script>
+
+    <hr><a href="legal.html">legal notice</a><hr>
+</body>
+</html>

@@ -1,0 +1,8 @@
+Original download link for the CAD files: http://louisgagnon.com/research/Cyclifter_FeeCAD_files.zip
+
+To explore the related project description, visit http://louisgagnon.com/research/AvH_cyclo.html
+
+CFD analyses to study the aerodynamics of the Cyclifter were conducted using OpenFOAM.
+Input and result files from these analyses are freely available here: https://darus.uni-stuttgart.de/dataverse/cyclorotor
+
+Original forum post for discussion: https://forum.freecad.org/viewtopic.php?p=739599#p739599

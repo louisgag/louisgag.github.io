@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pratique Der Die Das</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+        
+        .correct { color: #38a169; font-weight: bold; }
+        .incorrect { color: #e53e3e; font-weight: bold; }
+        
+        .question-card {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #4299e1;
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .word {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #2d3748;
+        }
+        
+        .translation {
+            text-align: center;
+            font-style: italic;
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .article-btn {
+            padding: 15px 25px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 80px;
+        }
+        
+        .der-btn {
+            background: #3182ce;
+            color: white;
+        }
+        
+        .die-btn {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .das-btn {
+            background: #38a169;
+            color: white;
+        }
+        
+        .none-btn {
+            background: #0000f1;
+            color: white;
+        }
+        
+        .article-btn:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        
+        .article-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .feedback.show {
+            opacity: 1;
+        }
+        
+        .feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #38a169;
+        }
+        
+        .feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #e53e3e;
+        }
+        
+        .next-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 12px 30px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .next-btn.show {
+            opacity: 1;
+        }
+        
+        .next-btn:hover {
+            background: #3182ce;
+            transform: translateY(-1px);
+        }
+        
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4299e1, #38a169);
+            transition: width 0.3s ease;
+        }
+
+        .tips {
+            background: #edf2f7;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #4299e1;
+        }
+        
+        .tips h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        
+        .tips ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .tips li {
+            margin: 8px 0;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇩🇪 Pratique des articles allemands</h1>
+        
+        <div class="tips">
+            <h3>📚 Rappel :</h3>
+            <ul>
+                <li><strong>der</strong> = masculin (bleu)</li>
+                <li><strong>die</strong> = féminin (rouge)</li>
+                <li><strong>das</strong> = neutre (vert)</li>
+            </ul>
+        </div>
+        
+        <div class="score">
+            Score: <span class="correct" id="correct">0</span> / <span class="incorrect" id="incorrect">0</span>
+            <div class="progress">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+        
+        <div class="question-card">
+            <div class="word" id="word">Haus</div>
+            <div class="translation" id="translation">(maison)</div>
+            
+            <div class="buttons">
+                <button class="article-btn der-btn" onclick="checkAnswer('der')">der</button>
+                <button class="article-btn die-btn" onclick="checkAnswer('die')">die</button>
+                <button class="article-btn das-btn" onclick="checkAnswer('das')">das</button>
+                <button class="article-btn none-btn" onclick="checkAnswer('')"></button>
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Question suivante</button>
+        </div>
+    </div>
+
+    <script>
+const words = [
+
+    // Basic pronouns and common words
+    {word: "ich", translation: "I | saya", article: ""},
+    {word: "du", translation: "you | kamu", article: ""},
+    {word: "er", translation: "he | dia (laki-laki)", article: ""},
+    {word: "sie", translation: "she/they | dia (perempuan)/mereka", article: ""},
+    {word: "es", translation: "it | itu", article: ""},
+    {word: "wir", translation: "we | kami", article: ""},
+    {word: "ihr", translation: "you (plural) | kalian", article: ""},
+    {word: "und", translation: "and | dan", article: ""},
+    {word: "oder", translation: "or | atau", article: ""},
+    {word: "aber", translation: "but | tetapi", article: ""},
+
+    // Family
+    {word: "Familie", translation: "family | keluarga", article: "die"},
+    {word: "Vater", translation: "father | ayah", article: "der"},
+    {word: "Mutter", translation: "mother | ibu", article: "die"},
+    {word: "Sohn", translation: "son | anak laki-laki", article: "der"},
+    {word: "Tochter", translation: "daughter | anak perempuan", article: "die"},
+    {word: "Bruder", translation: "brother | saudara laki-laki", article: "der"},
+    {word: "Schwester", translation: "sister | saudara perempuan", article: "die"},
+    {word: "Großvater", translation: "grandfather | kakek", article: "der"},
+    {word: "Großmutter", translation: "grandmother | nenek", article: "die"},
+    {word: "Onkel", translation: "uncle | paman", article: "der"},
+    {word: "Tante", translation: "aunt | bibi", article: "die"},
+    {word: "Kind", translation: "child | anak", article: "das"},
+    {word: "Baby", translation: "baby | bayi", article: "das"},
+    {word: "Eltern", translation: "parents | orang tua", article: "die"},
+    {word: "Mann", translation: "man | pria", article: "der"},
+    {word: "Frau", translation: "woman | wanita", article: "die"},
+
+    // Body parts
+    {word: "Kopf", translation: "head | kepala", article: "der"},
+    {word: "Haar", translation: "hair | rambut", article: "das"},
+    {word: "Auge", translation: "eye | mata", article: "das"},
+    {word: "Nase", translation: "nose | hidung", article: "die"},
+    {word: "Mund", translation: "mouth | mulut", article: "der"},
+    {word: "Ohr", translation: "ear | telinga", article: "das"},
+    {word: "Hand", translation: "hand | tangan", article: "die"},
+    {word: "Fuß", translation: "foot | kaki", article: "der"},
+    {word: "Bein", translation: "leg | kaki", article: "das"},
+    {word: "Arm", translation: "arm | lengan", article: "der"},
+    {word: "Finger", translation: "finger | jari", article: "der"},
+    {word: "Herz", translation: "heart | hati", article: "das"},
+
+    // Clothing
+    {word: "Kleidung", translation: "clothing | pakaian", article: "die"},
+    {word: "Hemd", translation: "shirt | kemeja", article: "das"},
+    {word: "Hose", translation: "pants | celana", article: "die"},
+    {word: "Kleid", translation: "dress | gaun", article: "das"},
+    {word: "Rock", translation: "skirt | rok", article: "der"},
+    {word: "Jacke", translation: "jacket | jaket", article: "die"},
+    {word: "Mantel", translation: "coat | mantel", article: "der"},
+    {word: "Schuh", translation: "shoe | sepatu", article: "der"},
+    {word: "Socke", translation: "sock | kaus kaki", article: "die"},
+    {word: "Hut", translation: "hat | topi", article: "der"},
+    {word: "Brille", translation: "glasses | kacamata", article: "die"},
+
+    // Food and drinks
+    {word: "Essen", translation: "food | makanan", article: "das"},
+    {word: "Trinken", translation: "drink | minuman", article: "das"},
+    {word: "Wasser", translation: "water | air", article: "das"},
+    {word: "Milch", translation: "milk | susu", article: "die"},
+    {word: "Kaffee", translation: "coffee | kopi", article: "der"},
+    {word: "Tee", translation: "tea | teh", article: "der"},
+    {word: "Bier", translation: "beer | bir", article: "das"},
+    {word: "Wein", translation: "wine | anggur", article: "der"},
+    {word: "Brot", translation: "bread | roti", article: "das"},
+    {word: "Butter", translation: "butter | mentega", article: "die"},
+    {word: "Käse", translation: "cheese | keju", article: "der"},
+    {word: "Fleisch", translation: "meat | daging", article: "das"},
+    {word: "Fisch", translation: "fish | ikan", article: "der"},
+    {word: "Huhn", translation: "chicken | ayam", article: "das"},
+    {word: "Ei", translation: "egg | telur", article: "das"},
+    {word: "Gemüse", translation: "vegetables | sayuran", article: "das"},
+    {word: "Obst", translation: "fruit | buah", article: "das"},
+    {word: "Apfel", translation: "apple | apel", article: "der"},
+    {word: "Banane", translation: "banana | pisang", article: "die"},
+    {word: "Orange", translation: "orange | jeruk", article: "die"},
+    {word: "Tomate", translation: "tomato | tomat", article: "die"},
+    {word: "Kartoffel", translation: "potato | kentang", article: "die"},
+    {word: "Zwiebel", translation: "onion | bawang", article: "die"},
+    {word: "Salat", translation: "salad | salad", article: "der"},
+    {word: "Suppe", translation: "soup | sup", article: "die"},
+    {word: "Pizza", translation: "pizza | pizza", article: "die"},
+    {word: "Kuchen", translation: "cake | kue", article: "der"},
+    {word: "Schokolade", translation: "chocolate | cokelat", article: "die"},
+    {word: "Zucker", translation: "sugar | gula", article: "der"},
+    {word: "Salz", translation: "salt | garam", article: "das"},
+
+    // House and furniture
+    {word: "Haus", translation: "house | rumah", article: "das"},
+    {word: "Wohnung", translation: "apartment | apartemen", article: "die"},
+    {word: "Zimmer", translation: "room | kamar", article: "das"},
+    {word: "Küche", translation: "kitchen | dapur", article: "die"},
+    {word: "Badezimmer", translation: "bathroom | kamar mandi", article: "das"},
+    {word: "Schlafzimmer", translation: "bedroom | kamar tidur", article: "das"},
+    {word: "Wohnzimmer", translation: "living room | ruang tamu", article: "das"},
+    {word: "Tür", translation: "door | pintu", article: "die"},
+    {word: "Fenster", translation: "window | jendela", article: "das"},
+    {word: "Tisch", translation: "table | meja", article: "der"},
+    {word: "Stuhl", translation: "chair | kursi", article: "der"},
+    {word: "Bett", translation: "bed | tempat tidur", article: "das"},
+    {word: "Sofa", translation: "sofa | sofa", article: "das"},
+    {word: "Schrank", translation: "closet | lemari", article: "der"},
+    {word: "Kühlschrank", translation: "refrigerator | kulkas", article: "der"},
+    {word: "Fernseher", translation: "television | televisi", article: "der"},
+    {word: "Computer", translation: "computer | komputer", article: "der"},
+    {word: "Telefon", translation: "telephone | telepon", article: "das"},
+    {word: "Lampe", translation: "lamp | lampu", article: "die"},
+    {word: "Spiegel", translation: "mirror | cermin", article: "der"},
+
+    // Transportation
+    {word: "Auto", translation: "car | mobil", article: "das"},
+    {word: "Bus", translation: "bus | bus", article: "der"},
+    {word: "Zug", translation: "train | kereta", article: "der"},
+    {word: "Flugzeug", translation: "airplane | pesawat", article: "das"},
+    {word: "Fahrrad", translation: "bicycle | sepeda", article: "das"},
+    {word: "Motorrad", translation: "motorcycle | sepeda motor", article: "das"},
+    {word: "Schiff", translation: "ship | kapal", article: "das"},
+    {word: "Taxi", translation: "taxi | taksi", article: "das"},
+    {word: "Straße", translation: "street | jalan", article: "die"},
+    {word: "Bahnhof", translation: "train station | stasiun kereta", article: "der"},
+    {word: "Flughafen", translation: "airport | bandara", article: "der"},
+
+    // Professions
+    {word: "Beruf", translation: "profession | profesi", article: "der"},
+    {word: "Arzt", translation: "doctor | dokter", article: "der"},
+    {word: "Lehrer", translation: "teacher | guru", article: "der"},
+    {word: "Student", translation: "student | mahasiswa", article: "der"},
+    {word: "Arbeiter", translation: "worker | pekerja", article: "der"},
+    {word: "Polizist", translation: "police officer | polisi", article: "der"},
+    {word: "Verkäufer", translation: "seller | penjual", article: "der"},
+    {word: "Koch", translation: "cook | koki", article: "der"},
+    {word: "Friseur", translation: "hairdresser | penata rambut", article: "der"},
+    {word: "Pilot", translation: "pilot | pilot", article: "der"},
+
+    // School and education
+    {word: "Schule", translation: "school | sekolah", article: "die"},
+    {word: "Universität", translation: "university | universitas", article: "die"},
+    {word: "Klasse", translation: "class | kelas", article: "die"},
+    {word: "Lektion", translation: "lesson | pelajaran", article: "die"},
+    {word: "Buch", translation: "book | buku", article: "das"},
+    {word: "Heft", translation: "notebook | buku tulis", article: "das"},
+    {word: "Stift", translation: "pen | pena", article: "der"},
+    {word: "Bleistift", translation: "pencil | pensil", article: "der"},
+    {word: "Papier", translation: "paper | kertas", article: "das"},
+    {word: "Tafel", translation: "blackboard | papan tulis", article: "die"},
+    {word: "Prüfung", translation: "exam | ujian", article: "die"},
+    {word: "Hausaufgabe", translation: "homework | pekerjaan rumah", article: "die"},
+
+    // Colors
+    {word: "Farbe", translation: "color | warna", article: "die"},
+    {word: "rot", translation: "red | merah", article: ""},
+    {word: "blau", translation: "blue | biru", article: ""},
+    {word: "grün", translation: "green | hijau", article: ""},
+    {word: "gelb", translation: "yellow | kuning", article: ""},
+    {word: "schwarz", translation: "black | hitam", article: ""},
+    {word: "weiß", translation: "white | putih", article: ""},
+    {word: "grau", translation: "gray | abu-abu", article: ""},
+    {word: "braun", translation: "brown | cokelat", article: ""},
+    {word: "orange", translation: "orange | oranye", article: ""},
+    {word: "rosa", translation: "pink | merah muda", article: ""},
+    {word: "lila", translation: "purple | ungu", article: ""},
+
+    // Numbers
+    {word: "null", translation: "zero | nol", article: ""},
+    {word: "eins", translation: "one | satu", article: ""},
+    {word: "zwei", translation: "two | dua", article: ""},
+    {word: "drei", translation: "three | tiga", article: ""},
+    {word: "vier", translation: "four | empat", article: ""},
+    {word: "fünf", translation: "five | lima", article: ""},
+    {word: "sechs", translation: "six | enam", article: ""},
+    {word: "sieben", translation: "seven | tujuh", article: ""},
+    {word: "acht", translation: "eight | delapan", article: ""},
+    {word: "neun", translation: "nine | sembilan", article: ""},
+    {word: "zehn", translation: "ten | sepuluh", article: ""},
+    {word: "elf", translation: "eleven | sebelas", article: ""},
+    {word: "zwölf", translation: "twelve | dua belas", article: ""},
+    {word: "zwanzig", translation: "twenty | dua puluh", article: ""},
+    {word: "dreißig", translation: "thirty | tiga puluh", article: ""},
+    {word: "vierzig", translation: "forty | empat puluh", article: ""},
+    {word: "fünfzig", translation: "fifty | lima puluh", article: ""},
+    {word: "hundert", translation: "hundred | seratus", article: ""},
+    {word: "tausend", translation: "thousand | seribu", article: ""},
+
+    // Time
+    {word: "Zeit", translation: "time | waktu", article: "die"},
+    {word: "Tag", translation: "day | hari", article: "der"},
+    {word: "Woche", translation: "week | minggu", article: "die"},
+    {word: "Monat", translation: "month | bulan", article: "der"},
+    {word: "Jahr", translation: "year | tahun", article: "das"},
+    {word: "Stunde", translation: "hour | jam", article: "die"},
+    {word: "Minute", translation: "minute | menit", article: "die"},
+    {word: "Sekunde", translation: "second | detik", article: "die"},
+    {word: "heute", translation: "today | hari ini", article: ""},
+    {word: "gestern", translation: "yesterday | kemarin", article: ""},
+    {word: "morgen", translation: "tomorrow | besok", article: ""},
+    {word: "jetzt", translation: "now | sekarang", article: ""},
+    {word: "früh", translation: "early | pagi", article: ""},
+    {word: "spät", translation: "late | terlambat", article: ""},
+
+    // Days of the week
+    {word: "Montag", translation: "Monday | Senin", article: "der"},
+    {word: "Dienstag", translation: "Tuesday | Selasa", article: "der"},
+    {word: "Mittwoch", translation: "Wednesday | Rabu", article: "der"},
+    {word: "Donnerstag", translation: "Thursday | Kamis", article: "der"},
+    {word: "Freitag", translation: "Friday | Jumat", article: "der"},
+    {word: "Samstag", translation: "Saturday | Sabtu", article: "der"},
+    {word: "Sonntag", translation: "Sunday | Minggu", article: "der"},
+
+    // Months
+    {word: "Januar", translation: "January | Januari", article: "der"},
+    {word: "Februar", translation: "February | Februari", article: "der"},
+    {word: "März", translation: "March | Maret", article: "der"},
+    {word: "April", translation: "April | April", article: "der"},
+    {word: "Mai", translation: "May | Mei", article: "der"},
+    {word: "Juni", translation: "June | Juni", article: "der"},
+    {word: "Juli", translation: "July | Juli", article: "der"},
+    {word: "August", translation: "August | Agustus", article: "der"},
+    {word: "September", translation: "September | September", article: "der"},
+    {word: "Oktober", translation: "October | Oktober", article: "der"},
+    {word: "November", translation: "November | November", article: "der"},
+    {word: "Dezember", translation: "December | Desember", article: "der"},
+
+    // Weather
+    {word: "Wetter", translation: "weather | cuaca", article: "das"},
+    {word: "Sonne", translation: "sun | matahari", article: "die"},
+    {word: "Regen", translation: "rain | hujan", article: "der"},
+    {word: "Schnee", translation: "snow | salju", article: "der"},
+    {word: "Wind", translation: "wind | angin", article: "der"},
+    {word: "Wolke", translation: "cloud | awan", article: "die"},
+    {word: "kalt", translation: "cold | dingin", article: ""},
+    {word: "warm", translation: "warm | hangat", article: ""},
+    {word: "heiß", translation: "hot | panas", article: ""},
+    {word: "kühl", translation: "cool | sejuk", article: ""},
+
+    // Animals
+    {word: "Tier", translation: "animal | hewan", article: "das"},
+    {word: "Hund", translation: "dog | anjing", article: "der"},
+    {word: "Katze", translation: "cat | kucing", article: "die"},
+    {word: "Vogel", translation: "bird | burung", article: "der"},
+    {word: "Pferd", translation: "horse | kuda", article: "das"},
+    {word: "Kuh", translation: "cow | sapi", article: "die"},
+    {word: "Schwein", translation: "pig | babi", article: "das"},
+    {word: "Schaf", translation: "sheep | domba", article: "das"},
+    {word: "Maus", translation: "mouse | tikus", article: "die"},
+    {word: "Löwe", translation: "lion | singa", article: "der"},
+    {word: "Elefant", translation: "elephant | gajah", article: "der"},
+    {word: "Bär", translation: "bear | beruang", article: "der"},
+
+    // Nature
+    {word: "Natur", translation: "nature | alam", article: "die"},
+    {word: "Baum", translation: "tree | pohon", article: "der"},
+    {word: "Blume", translation: "flower | bunga", article: "die"},
+    {word: "Gras", translation: "grass | rumput", article: "das"},
+    {word: "Berg", translation: "mountain | gunung", article: "der"},
+    {word: "See", translation: "lake | danau", article: "der"},
+    {word: "Meer", translation: "sea | laut", article: "das"},
+    {word: "Fluss", translation: "river | sungai", article: "der"},
+    {word: "Wald", translation: "forest | hutan", article: "der"},
+    {word: "Himmel", translation: "sky | langit", article: "der"},
+    {word: "Erde", translation: "earth | bumi", article: "die"},
+    {word: "Mond", translation: "moon | bulan", article: "der"},
+    {word: "Stern", translation: "star | bintang", article: "der"},
+
+    // Common verbs
+    {word: "sein", translation: "to be | menjadi", article: ""},
+    {word: "haben", translation: "to have | memiliki", article: ""},
+    {word: "gehen", translation: "to go | pergi", article: ""},
+    {word: "kommen", translation: "to come | datang", article: ""},
+    {word: "machen", translation: "to make/do | membuat", article: ""},
+    {word: "sagen", translation: "to say | mengatakan", article: ""},
+    {word: "sprechen", translation: "to speak | berbicara", article: ""},
+    {word: "hören", translation: "to hear | mendengar", article: ""},
+    {word: "sehen", translation: "to see | melihat", article: ""},
+    {word: "wissen", translation: "to know | tahu", article: ""},
+    {word: "denken", translation: "to think | berpikir", article: ""},
+    {word: "fühlen", translation: "to feel | merasakan", article: ""},
+    {word: "essen", translation: "to eat | makan", article: ""},
+    {word: "trinken", translation: "to drink | minum", article: ""},
+    {word: "schlafen", translation: "to sleep | tidur", article: ""},
+    {word: "arbeiten", translation: "to work | bekerja", article: ""},
+    {word: "spielen", translation: "to play | bermain", article: ""},
+    {word: "lesen", translation: "to read | membaca", article: ""},
+    {word: "schreiben", translation: "to write | menulis", article: ""},
+    {word: "kaufen", translation: "to buy | membeli", article: ""},
+    {word: "verkaufen", translation: "to sell | menjual", article: ""},
+    {word: "nehmen", translation: "to take | mengambil", article: ""},
+    {word: "geben", translation: "to give | memberi", article: ""},
+    {word: "helfen", translation: "to help | membantu", article: ""},
+    {word: "lernen", translation: "to learn | belajar", article: ""},
+    {word: "lehren", translation: "to teach | mengajar", article: ""},
+    {word: "verstehen", translation: "to understand | memahami", article: ""},
+    {word: "vergessen", translation: "to forget | lupa", article: ""},
+    {word: "finden", translation: "to find | menemukan", article: ""},
+    {word: "suchen", translation: "to search | mencari", article: ""},
+    {word: "warten", translation: "to wait | menunggu", article: ""},
+    {word: "leben", translation: "to live | hidup", article: ""},
+    {word: "sterben", translation: "to die | mati", article: ""},
+    {word: "fahren", translation: "to drive | mengemudi", article: ""},
+    {word: "fliegen", translation: "to fly | terbang", article: ""},
+    {word: "laufen", translation: "to run | berlari", article: ""},
+    {word: "stehen", translation: "to stand | berdiri", article: ""},
+    {word: "sitzen", translation: "to sit | duduk", article: ""},
+    {word: "liegen", translation: "to lie | berbaring", article: ""},
+    {word: "öffnen", translation: "to open | membuka", article: ""},
+    {word: "schließen", translation: "to close | menutup", article: ""},
+    {word: "beginnen", translation: "to begin | mulai", article: ""},
+    {word: "enden", translation: "to end | berakhir", article: ""},
+    {word: "kosten", translation: "to cost | berharga", article: ""},
+    {word: "bedeuten", translation: "to mean | berarti", article: ""},
+    {word: "werden", translation: "to become | menjadi", article: ""},
+    {word: "bleiben", translation: "to stay | tinggal", article: ""},
+    {word: "können", translation: "can/to be able | bisa", article: ""},
+    {word: "müssen", translation: "must/to have to | harus", article: ""},
+    {word: "wollen", translation: "to want | ingin", article: ""},
+    {word: "sollen", translation: "should/to be supposed to | seharusnya", article: ""},
+    {word: "dürfen", translation: "may/to be allowed | boleh", article: ""},
+    {word: "mögen", translation: "to like | suka", article: ""},
+
+    // Common adjectives
+    {word: "groß", translation: "big/tall | besar/tinggi", article: ""},
+    {word: "klein", translation: "small | kecil", article: ""},
+    {word: "alt", translation: "old | tua", article: ""},
+    {word: "jung", translation: "young | muda", article: ""},
+    {word: "neu", translation: "new | baru", article: ""},
+    {word: "gut", translation: "good | baik", article: ""},
+    {word: "schlecht", translation: "bad | buruk", article: ""},
+    {word: "schön", translation: "beautiful | cantik", article: ""},
+    {word: "hässlich", translation: "ugly | jelek", article: ""},
+    {word: "lang", translation: "long | panjang", article: ""},
+    {word: "kurz", translation: "short | pendek", article: ""},
+    {word: "hoch", translation: "high | tinggi", article: ""},
+    {word: "niedrig", translation: "low | rendah", article: ""},
+    {word: "dick", translation: "thick/fat | tebal/gemuk", article: ""},
+    {word: "dünn", translation: "thin | tipis/kurus", article: ""},
+    {word: "schnell", translation: "fast | cepat", article: ""},
+    {word: "langsam", translation: "slow | lambat", article: ""},
+    {word: "stark", translation: "strong | kuat", article: ""},
+    {word: "schwach", translation: "weak | lemah", article: ""},
+    {word: "reich", translation: "rich | kaya", article: ""},
+    {word: "arm", translation: "poor | miskin", article: ""},
+    {word: "teuer", translation: "expensive | mahal", article: ""},
+    {word: "billig", translation: "cheap | murah", article: ""},
+    {word: "leicht", translation: "easy/light | mudah/ringan", article: ""},
+    {word: "schwer", translation: "difficult/heavy | sulit/berat", article: ""},
+    {word: "leer", translation: "empty | kosong", article: ""},
+    {word: "voll", translation: "full | penuh", article: ""},
+    {word: "offen", translation: "open | terbuka", article: ""},
+    {word: "geschlossen", translation: "closed | tertutup", article: ""},
+    {word: "sauber", translation: "clean | bersih", article: ""},
+    {word: "schmutzig", translation: "dirty | kotor", article: ""},
+    {word: "ruhig", translation: "quiet | tenang", article: ""},
+    {word: "laut", translation: "loud | keras", article: ""},
+    {word: "glücklich", translation: "happy | bahagia", article: ""},
+    {word: "traurig", translation: "sad | sedih", article: ""},
+    {word: "müde", translation: "tired | lelah", article: ""},
+    {word: "gesund", translation: "healthy | sehat", article: ""},
+    {word: "krank", translation: "sick | sakit", article: ""},
+    {word: "richtig", translation: "correct/right | benar", article: ""},
+    {word: "falsch", translation: "wrong/false | salah", article: ""},
+    {word: "wichtig", translation: "important | penting", article: ""},
+    {word: "interessant", translation: "interesting | menarik", article: ""},
+    {word: "langweilig", translation: "boring | membosankan", article: ""},
+
+    // Common adverbs
+    {word: "hier", translation: "here | di sini", article: ""},
+    {word: "dort", translation: "there | di sana", article: ""},
+    {word: "wo", translation: "where | di mana", article: ""},
+    {word: "wann", translation: "when | kapan", article: ""},
+    {word: "wie", translation: "how | bagaimana", article: ""},
+    {word: "warum", translation: "why | mengapa", article: ""},
+    {word: "was", translation: "what | apa", article: ""},
+    {word: "wer", translation: "who | siapa", article: ""},
+    {word: "immer", translation: "always | selalu", article: ""},
+    {word: "nie", translation: "never | tidak pernah", article: ""},
+    {word: "oft", translation: "often | sering", article: ""},
+    {word: "manchmal", translation: "sometimes | kadang-kadang", article: ""},
+    {word: "sehr", translation: "very | sangat", article: ""},
+    {word: "ziemlich", translation: "quite | cukup", article: ""},
+    {word: "ganz", translation: "quite/whole | cukup/seluruh", article: ""},
+    {word: "fast", translation: "almost | hampir", article: ""},
+    {word: "nur", translation: "only | hanya", article: ""},
+    {word: "auch", translation: "also | juga", article: ""},
+    {word: "noch", translation: "still/yet | masih", article: ""},
+    {word: "schon", translation: "already | sudah", article: ""},
+    {word: "wieder", translation: "again | lagi", article: ""},
+    {word: "zusammen", translation: "together | bersama", article: ""},
+    {word: "allein", translation: "alone | sendiri", article: ""},
+    {word: "vielleicht", translation: "maybe | mungkin", article: ""},
+    {word: "natürlich", translation: "of course | tentu saja", article: ""},
+    {word: "sicher", translation: "sure | pasti", article: ""},
+    {word: "genau", translation: "exactly | tepat", article: ""},
+    {word: "wirklich", translation: "really | benar-benar", article: ""},
+    {word: "besonders", translation: "especially | terutama", article: ""},
+
+    // Prepositions and conjunctions
+    {word: "in", translation: "in | di dalam", article: ""},
+    {word: "auf", translation: "on | di atas", article: ""},
+    {word: "unter", translation: "under | di bawah", article: ""},
+    {word: "über", translation: "over/about | di atas/tentang", article: ""},
+    {word: "vor", translation: "before/in front of | sebelum/di depan", article: ""},
+    {word: "nach", translation: "after/to | setelah/ke", article: ""},
+    {word: "bei", translation: "at/with | di/dengan", article: ""},
+    {word: "zu", translation: "to | ke", article: ""},
+    {word: "von", translation: "from/of | dari", article: ""},
+    {word: "mit", translation: "with | dengan", article: ""},
+    {word: "ohne", translation: "without | tanpa", article: ""},
+    {word: "für", translation: "for | untuk", article: ""},
+    {word: "gegen", translation: "against | melawan", article: ""},
+    {word: "durch", translation: "through | melalui", article: ""},
+    {word: "um", translation: "around/at (time) | sekitar/pada (waktu)", article: ""},
+    {word: "zwischen", translation: "between | antara", article: ""},
+    {word: "neben", translation: "next to | di sebelah", article: ""},
+    {word: "hinter", translation: "behind | di belakang", article: ""},
+    {word: "weil", translation: "because | karena", article: ""},
+    {word: "wenn", translation: "if/when | jika/ketika", article: ""},
+    {word: "dass", translation: "that | bahwa", article: ""},
+    {word: "obwohl", translation: "although | meskipun", article: ""},
+    {word: "damit", translation: "so that | agar", article: ""},
+    {word: "als", translation: "than/when/as | daripada/ketika/sebagai", article: ""},
+    {word: "wie", translation: "like/as | seperti/sebagai", article: ""},
+
+    // Places and locations
+    {word: "Stadt", translation: "city | kota", article: "die"},
+    {word: "Land", translation: "country | negara", article: "das"},
+    {word: "Dorf", translation: "village | desa", article: "das"},
+    {word: "Platz", translation: "place/square | tempat/alun-alun", article: "der"},
+    {word: "Markt", translation: "market | pasar", article: "der"},
+    {word: "Geschäft", translation: "shop | toko", article: "das"},
+    {word: "Restaurant", translation: "restaurant | restoran", article: "das"},
+    {word: "Hotel", translation: "hotel | hotel", article: "das"},
+    {word: "Bank", translation: "bank | bank", article: "die"},
+    {word: "Post", translation: "post office | kantor pos", article: "die"},
+    {word: "Krankenhaus", translation: "hospital | rumah sakit", article: "das"},
+    {word: "Kirche", translation: "church | gereja", article: "die"},
+    {word: "Museum", translation: "museum | museum", article: "das"},
+    {word: "Theater", translation: "theater | teater", article: "das"},
+    {word: "Kino", translation: "cinema | bioskop", article: "das"},
+    {word: "Park", translation: "park | taman", article: "der"},
+    {word: "Garten", translation: "garden | taman", article: "der"},
+    {word: "Büro", translation: "office | kantor", article: "das"},
+    {word: "Fabrik", translation: "factory | pabrik", article: "die"},
+
+    // Common expressions and phrases
+    {word: "bitte", translation: "please | tolong", article: ""},
+    {word: "danke", translation: "thank you | terima kasih", article: ""},
+    {word: "entschuldigung", translation: "excuse me/sorry | permisi/maaf", article: ""},
+    {word: "hallo", translation: "hello | halo", article: ""},
+    {word: "tschüss", translation: "bye | selamat tinggal", article: ""},
+    {word: "ja", translation: "yes | ya", article: ""},
+    {word: "nein", translation: "no | tidak", article: ""},
+    {word: "viel", translation: "much/many | banyak", article: ""},
+    {word: "wenig", translation: "little/few | sedikit", article: ""},
+    {word: "alle", translation: "all | semua", article: ""},
+    {word: "nichts", translation: "nothing | tidak ada", article: ""},
+    {word: "etwas", translation: "something | sesuatu", article: ""},
+    {word: "jeder", translation: "everyone/each | setiap orang/setiap", article: ""},
+    {word: "niemand", translation: "nobody | tidak ada orang", article: ""},
+    {word: "mehr", translation: "more | lebih", article: ""},
+    {word: "weniger", translation: "less | kurang", article: ""},
+    {word: "gleich", translation: "same/immediately | sama/segera", article: ""},
+    {word: "anders", translation: "different | berbeda", article: ""},
+    {word: "genug", translation: "enough | cukup", article: ""}
+        ];
+        
+        let currentWord = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let totalQuestions = 0;
+        
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        let shuffledWords = shuffle([...words]);
+        
+        function displayWord() {
+            const word = shuffledWords[currentWord];
+            document.getElementById('word').textContent = word.word;
+            document.getElementById('translation').textContent = `(${word.translation})`;
+            
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('next-btn').classList.remove('show');
+            
+            // Enable buttons
+            document.querySelectorAll('.article-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            });
+        }
+        
+        function checkAnswer(selectedArticle) {
+            const word = shuffledWords[currentWord];
+            const feedback = document.getElementById('feedback');
+            const nextBtn = document.getElementById('next-btn');
+            
+            totalQuestions++;
+            updateProgress();
+            
+            // Disable buttons
+            document.querySelectorAll('.article-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+            });
+            
+            if (selectedArticle === word.article) {
+                correctCount++;
+                feedback.textContent = `✅ Correct ! ${word.article} ${word.word}`;
+                feedback.className = 'feedback correct show';
+            } else {
+                incorrectCount++;
+                feedback.textContent = `❌ Incorrect ! C'est "${word.article} ${word.word}"`;
+                feedback.className = 'feedback incorrect show';
+            }
+            
+            updateScore();
+            nextBtn.classList.add('show');
+        }
+        
+        function nextQuestion() {
+            currentWord++;
+            if (currentWord >= shuffledWords.length) {
+                // Reshuffle and restart
+                shuffledWords = shuffle([...words]);
+                currentWord = 0;
+            }
+            displayWord();
+        }
+        
+        function updateScore() {
+            document.getElementById('correct').textContent = correctCount;
+            document.getElementById('incorrect').textContent = incorrectCount;
+        }
+        
+        function updateProgress() {
+            const percentage = (correctCount / Math.max(totalQuestions, 1)) * 100;
+            document.getElementById('progress-bar').style.width = percentage + '%';
+        }
+        
+        // Initialize
+        displayWord();
+        updateScore();
+    </script>
+
+    <hr><a href="legal.html">legal notice</a><hr>
+</body>
+</html>
